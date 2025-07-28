@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Max 5 images allowed' }, { status: 400 });
     }
 
-    // ✅ Generate slug from title
+    // Generate slug from title
     const slug = title
       .toLowerCase()
       .trim()
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     const db = client.db('alfa_business');
     const collection = db.collection('plans');
 
-    // ✅ Check for duplicate slug
+    // Check for duplicate slug
     const existing = await collection.findOne({ slug });
     if (existing) {
       return NextResponse.json(
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ✅ Upload images
+    // Upload images
     const imageUrls: string[] = [];
 
     for (const file of files) {
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       imageUrls.push(uploadRes.secure_url);
     }
 
-    // ✅ Validate using schema (without slug)
+    // Validate using schema (without slug)
     const parsed = planSchema.parse({
       title,
       monthlyPrice,
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString(),
     });
 
-    // ✅ Insert with generated slug
+    // Insert with generated slug
     const result = await collection.insertOne({
       ...parsed,
       slug,

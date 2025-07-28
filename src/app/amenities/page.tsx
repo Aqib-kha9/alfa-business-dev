@@ -1,63 +1,64 @@
+'use client';
 import FeatureCard from "@/app/components/reusable/FeatureCard";
 import BookTourCTA from "../components/reusable/BookTourCTA";
+import { useEffect, useState } from "react";
 
-const amenities = [
-    {
-        image: '/wifi.jpeg',
-        title: 'High-Speed WiFi',
-        desc: 'Blazing-fast internet for seamless work.',
-    },
-    {
-        image: '/snack.jpg',
-        title: 'Complimentary Snacks',
-        desc: 'Free coffee, tea & snacks daily.',
-    },
-    {
-        image: '/conference.jpg',
-        title: 'Modern Conference Rooms',
-        desc: 'Bookable rooms with all essentials.',
-    },
-    {
-        image: '/Biometric.webp',
-        title: 'Biometric Access',
-        desc: 'Secure entry with biometrics.',
-    },
-    {
-        image: '/Ample.jpg',
-        title: 'Ample Parking',
-        desc: 'Easy parking for you and guests.',
-    },
-    {
-        image: '/Prime.jpeg',
-        title: 'Prime Location',
-        desc: 'In the heart of Mumbai.',
-    },
-    {
-        image: '/extra.jpg',
-        title: 'Extra Benefit',
-        desc: 'Hidden if more than 6.',
-    },
-];
+type Amenity = {
+  _id: string;
+  amenitiesName: string;
+  tag: string;
+  description: string;
+  image: string[];
+};
 
 export default function Amenities() {
-    return (
-        <section className="pt-16 bg-white">
-            <div className="max-w-7xl mx-auto px-4 mb-16 text-center">
-                {/* Copied heading styles */}
-                <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-[#1e2952]">
-                    Explore Our World-Class Amenities
-                </h1>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">
-                    At Alfa Business Center, we provide everything you need for a productive and comfortable work environment. Discover the extensive range of facilities designed to enhance your coworking experience.        </p>
+  const [amenities, setAmenities] = useState<Amenity[]>([]);
+  const [loading, setLoading] = useState(true);
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {amenities.map((item, index) => (
-                        <FeatureCard key={index} {...item} />
-                    ))}
-                </div>
-                
-            </div>
-            <BookTourCTA/>
-        </section>
-    );
+  const fetchAmenities = async () => {
+    try {
+      const res = await fetch('/api/amenities');
+      if (!res.ok) throw new Error('Failed to fetch amenities');
+      const data = await res.json();
+      setAmenities(data);
+    } catch (error) {
+      console.error('Error fetching amenities:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAmenities();
+  }, []);
+
+  return (
+    <section className="pt-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4 mb-16 text-center">
+        <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-[#1e2952]">
+          Explore Our World-Class Amenities
+        </h1>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">
+          At Alfa Business Center, we provide everything you need for a productive and comfortable work environment. Discover the extensive range of facilities designed to enhance your coworking experience.
+        </p>
+
+        {loading ? (
+          <p className="text-center text-gray-500">Loading amenities...</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {amenities.map((item, index) => (
+              <FeatureCard
+                key={item._id}
+                image={item.image?.[0] || '/placeholder.jpg'}
+                title={item.amenitiesName}
+                desc={item.description}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <BookTourCTA />
+    </section>
+  );
 }

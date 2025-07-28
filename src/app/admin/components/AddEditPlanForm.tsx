@@ -163,8 +163,7 @@ export default function AddEditPlanForm({
     yearlyPrice: Number(form.yearlyPrice),
     monthlyFeatures: monthlyFeatureTags,
     yearlyFeatures: yearlyFeatureTags,
-    images: imageFiles.map(() => 'https://placeholder.com/image.jpg'), // dummy for validation
-  });
+images: [...existingImages, ...imageFiles.map(() => 'https://dummy.image')],  });
 
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
