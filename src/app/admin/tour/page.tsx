@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FaPlus } from 'react-icons/fa';
-import clsx from 'clsx';
-import ActionMenu from '../components/ActionMenu';
 import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
+import Swal from 'sweetalert2';
+import { FaPlus } from 'react-icons/fa';
+import ActionMenu from '../components/ActionMenu';
 
 const tabs = ['All Requests', 'Pending', 'Approved'];
 
@@ -43,39 +44,45 @@ export default function TourRequestsPage() {
   }, []);
 
   const handleDelete = async (id: string, name: string) => {
-    const confirm = window.confirm(`Are you sure you want to delete the tour request for ${name}?`);
-    if (!confirm) return;
+    const result = await Swal.fire({
+      title: `Delete tour request for ${name}?`,
+      text: 'This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`/api/book-tour/${id}`, {
+      const res = await fetch(`/api/book-tour?id=${id}`, {
         method: 'DELETE',
-        credentials: 'include', // Send admin cookies if needed
       });
 
       if (!res.ok) {
         const err = await res.json();
-        alert(`Error: ${err.error || 'Failed to delete'}`);
+        Swal.fire('Error', err.error || 'Failed to delete', 'error');
         return;
       }
 
-      // Optimistically remove from UI
       setData((prev) => prev.filter((item) => item._id !== id));
-      alert('Tour request deleted successfully.');
+      Swal.fire('Deleted!', 'Tour request deleted.', 'success');
     } catch (error) {
-      alert('Something went wrong while deleting.');
       console.error(error);
+      Swal.fire('Error', 'Something went wrong while deleting.', 'error');
     }
   };
-
 
   const filteredData =
     selectedTab === 'All Requests'
       ? data
-      : data.filter((d) => d.status === selectedTab);
+      : data.filter(
+          (d) => (d.status || 'Pending').toLowerCase() === selectedTab.toLowerCase()
+        );
 
   return (
     <div className="p-6 mx-auto">
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-2xl font-semibold text-[#2d386a]">Tour Requests</h2>
@@ -85,7 +92,6 @@ export default function TourRequestsPage() {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-4 mb-4">
         {tabs.map((tab) => (
           <button
@@ -103,7 +109,6 @@ export default function TourRequestsPage() {
         ))}
       </div>
 
-      {/* Table */}
       <div className="bg-white shadow-sm rounded-lg overflow-x-auto h-auto">
         <div className="px-4 py-3 border-b">
           <h4 className="text-base font-semibold text-gray-800">Tour Request Details</h4>
@@ -159,7 +164,6 @@ export default function TourRequestsPage() {
                       onEdit={() => router.push(`/admin/tour/edit?id=${row._id}`)}
                       onDelete={() => handleDelete(row._id, row.fullName)}
                     />
-
                   </td>
                 </tr>
               ))}

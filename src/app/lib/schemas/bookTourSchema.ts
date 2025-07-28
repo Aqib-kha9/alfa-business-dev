@@ -5,5 +5,6 @@ export const bookTourSchema = z.object({
   email: z.string().email('Invalid email'),
   preferredDate: z.string().min(1, 'Date is required'),
   preferredTime: z.string().min(1, 'Time is required'),
+  status: z.enum(['pending', 'approved']).default('pending'),
   message: z.string().optional(),
 });
