@@ -8,6 +8,7 @@ export default function VisitPage() {
     const [form, setForm] = useState({
         fullName: '',
         email: '',
+        number: '',
         preferredDate: '',
         preferredTime: '',
         message: '',
@@ -54,6 +55,7 @@ export default function VisitPage() {
             setForm({
                 fullName: '',
                 email: '',
+                number: '',
                 preferredDate: '',
                 preferredTime: '',
                 message: '',
@@ -109,6 +111,18 @@ export default function VisitPage() {
                                 />
                                 {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
                             </div>
+                            <div>
+                                <label className="block mb-1 font-medium text-black">Phone Number</label>
+                                <input
+                                    name="number"
+                                    type="tel"
+                                    value={form.number}
+                                    onChange={handleChange}
+                                    placeholder="+91 12345 67890"
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#2d386a]"
+                                />
+                                {errors.number && <p className="text-sm text-red-600">{errors.number}</p>}  
+                                </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>

@@ -10,6 +10,7 @@ export default function EditTestimonialPage() {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     name: '',
+    title: '',
     email: '',
     message: '',
     image: '',
@@ -32,14 +33,15 @@ export default function EditTestimonialPage() {
             message: testimonial.message || '',
             image: testimonial.image || '',
             status: testimonial.status || 'pending',
+            title: testimonial.title || '',
           });
-          setLoading(false);
         })
         .catch(err => {
           console.error(err);
           toast.error('Failed to load testimonial');
-          setLoading(false);
-        });
+          router.push('/admin/testimonials');
+        })
+        .finally(() => setLoading(false));
     }
   }, [id]);
 
@@ -63,6 +65,7 @@ export default function EditTestimonialPage() {
     formData.append('_id', String(id));
     formData.append('name', form.name);
     formData.append('email', form.email);
+    formData.append('title', form.title);
     formData.append('message', form.message);
     formData.append('status', form.status);
     if (imageFile) {
@@ -88,25 +91,26 @@ export default function EditTestimonialPage() {
     }
   };
 
-  if (loading) return <p className="p-4">Loading...</p>;
+  if (loading) return <p className="text-gray-500 px-4">Loading testimonial...</p>;
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#2d386a]">Edit Testimonial</h1>
-        <button
-          onClick={() => router.back()}
-          className="text-sm px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded"
-        >
-          ← Back
-        </button>
-      </div>
+    <div className="max-w-4xl mx-auto px-4 py-6">
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Edit Testimonial</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white shadow rounded-xl p-6 space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow rounded-xl p-6 space-y-6"
+      >
         <SimpleInput
           label="Name"
           name="name"
           value={form.name}
+          onChange={handleChange}
+        />
+        <SimpleInput
+          label="Title"
+          name="title"
+          value={form.title}
           onChange={handleChange}
         />
         <SimpleInput
@@ -125,20 +129,20 @@ export default function EditTestimonialPage() {
         />
 
         {/* Image Upload Field */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Image</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
           <input
             type="file"
             name="image"
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full border px-4 py-2 rounded-md text-sm border-gray-300"
+            className="w-full border px-4 py-2 rounded-md text-sm border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#2d386a]"
           />
           {form.image && !imageFile && (
             <img
               src={form.image}
-              alt="Existing"
-              className="w-24 h-24 rounded object-cover mt-2"
+              alt="Uploaded"
+              className="w-24 h-24 rounded object-cover mt-2 border"
             />
           )}
         </div>
@@ -158,12 +162,12 @@ export default function EditTestimonialPage() {
           </select>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end pt-2">
           <button
             type="submit"
-            className="px-6 py-2 bg-[#2d386a] text-white rounded hover:bg-[#1f2950]"
+            className="px-6 py-2 bg-[#2d386a] text-white rounded hover:bg-[#1f2950] transition"
           >
-            Update
+            Update Testimonial
           </button>
         </div>
       </form>
@@ -171,7 +175,7 @@ export default function EditTestimonialPage() {
   );
 }
 
-// ✅ Reusable SimpleInput
+// ✅ Reusable Input (SimpleInput)
 function SimpleInput({
   label,
   name,

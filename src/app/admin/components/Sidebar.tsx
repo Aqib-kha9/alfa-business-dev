@@ -5,7 +5,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
 import { LuWallet } from "react-icons/lu";
-import { TiMessage } from "react-icons/ti";
+import { TiContacts, TiMessage } from "react-icons/ti";
 import { useRouter } from 'next/navigation';
 
 const menu = [
@@ -14,6 +14,7 @@ const menu = [
   { icon: <PlusCircle size={20} />, label: 'Tour Requests', href: '/admin/tour' },
   { icon: <Home size={20} />, label: 'Amenities', href: '/admin/amenities' },
   { icon: <TiMessage  size={20} />, label: 'Testimonials', href: '/admin/testimonials' },
+  { icon: <TiContacts  size={20} />, label: 'Contact', href: '/admin/contact' },
 ];
 
 export default function AdminSidebar({

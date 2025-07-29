@@ -10,6 +10,7 @@ export default function AddTestimonial() {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    title: '',
     message: '',
     image: null as File | null,
   });
@@ -37,6 +38,7 @@ export default function AddTestimonial() {
     try {
       const formData = new FormData();
       formData.append('name', form.name);
+      formData.append('title', form.title);
       formData.append('email', form.email);
       formData.append('message', form.message);
       if (form.image) formData.append('image', form.image);
@@ -74,6 +76,7 @@ export default function AddTestimonial() {
 
       <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-6">
         <SimpleInput label="Name" name="name" value={form.name} onChange={handleChange} />
+        <SimpleInput label="Title" name="title" value={form.title} onChange={handleChange} />
         <SimpleInput label="Email" name="email" value={form.email} onChange={handleChange} />
         <SimpleInput label="Message" name="message" value={form.message} onChange={handleChange} isTextArea />
 

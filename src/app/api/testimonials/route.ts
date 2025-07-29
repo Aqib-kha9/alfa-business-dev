@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
 
     const name = formData.get('name') as string;
+    const title = formData.get('title') as string;
     const email = formData.get('email') as string;
     const message = formData.get('message') as string;
     const imageFile = formData.get('image') as File;
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
     const newTestimonial = {
       name,
       email,
+      title,
       message,
       image: secure_url,
       status: 'pending', // optional: default value

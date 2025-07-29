@@ -14,6 +14,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
+    const title = formData.get('title') as string;
     const message = formData.get('message') as string;
     const status = formData.get('status') as string;
     const imageFile = formData.get('image') as File | null;
@@ -21,6 +22,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const updateData: any = {
       name,
       email,
+      title,
       message,
       status,
     };

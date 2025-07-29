@@ -1,7 +1,45 @@
+'use client';
+import { useState } from 'react';
 import { Mail, MapPin, Phone } from "lucide-react";
 import ContactBanner from "../components/reusable/ContactBanner";
 
 export default function ContactUsPage() {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    number: '',
+    message: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('Message sent!');
+        setForm({ name: '', email: '', number: '', message: '' }); // Reset form
+      } else {
+        alert(data.error?.[0]?.message || data.error || 'Something went wrong.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error submitting the form.');
+    }
+  };
+
   return (
     <>
       <ContactBanner />
@@ -13,11 +51,14 @@ export default function ContactUsPage() {
               {/* Left: Contact Form */}
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-[#2d386a] mb-6">Send Us a Message</h2>
-                <form className="space-y-5">
+                <form className="space-y-5" onSubmit={handleSubmit}>
                   <div>
                     <label className="block text-sm font-medium text-black">Name</label>
                     <input
                       type="text"
+                      name="name"
+                      value={form.name}
+                      onChange={handleChange}
                       placeholder="Enter your name"
                       className="w-full border border-gray-300 rounded-md px-4 py-2 mt-1 focus:ring-2 focus:ring-[#2d386a] focus:outline-none"
                     />
@@ -26,13 +67,30 @@ export default function ContactUsPage() {
                     <label className="block text-sm font-medium text-black">Email</label>
                     <input
                       type="email"
+                      name="email"
+                      value={form.email}
+                      onChange={handleChange}
                       placeholder="your@email.com"
+                      className="w-full border border-gray-300 rounded-md px-4 py-2 mt-1 focus:ring-2 focus:ring-[#2d386a] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-black">Number</label>
+                    <input
+                      type="text"
+                      name="number"
+                      value={form.number}
+                      onChange={handleChange}
+                      placeholder="+91 XXXXXXXXXX"
                       className="w-full border border-gray-300 rounded-md px-4 py-2 mt-1 focus:ring-2 focus:ring-[#2d386a] focus:outline-none"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-black">Message</label>
                     <textarea
+                      name="message"
+                      value={form.message}
+                      onChange={handleChange}
                       rows={5}
                       placeholder="Enter your question or feedback"
                       className="w-full border border-gray-300 rounded-md px-4 py-2 mt-1 focus:ring-2 focus:ring-[#2d386a] focus:outline-none"

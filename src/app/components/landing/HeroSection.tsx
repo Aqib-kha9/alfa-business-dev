@@ -144,7 +144,7 @@ const handleNext = () => {
           Join Mumbai’s most flexible coworking space designed for productivity and collaboration.
         </p>
         <div className="flex sm:flex-row justify-center gap-4">
-          <Link href="/book-tour">
+          <Link href="/tour">
             <button className="cursor-pointer bg-[rgb(45,56,106)] text-white px-6 py-3 rounded-md shadow hover:bg-[rgb(35,45,90)] transition text-sm font-medium">
               Book Free Tour
             </button>

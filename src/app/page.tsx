@@ -71,7 +71,7 @@ export default function HomePage() {
       <WhyChooseSection
         heading="Why Choose Alfa Business Center?"
         subheading="Discover the top reasons professionals prefer working with us."
-        features={homeFeatures}
+        // features={homeFeatures}
         maxVisible={6}
       />
       <PricingSection />

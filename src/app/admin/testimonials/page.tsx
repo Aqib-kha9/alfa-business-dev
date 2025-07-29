@@ -15,6 +15,8 @@ const statusColors: Record<'approved' | 'pending' | 'rejected', string> = {
 type Testimonial = {
   _id: string;
   name: string;
+  title: string;
+  email: string;
   status: 'Approved' | 'Pending' | 'Rejected';
   message: string;
   image: string;
@@ -94,6 +96,7 @@ export default function ClientTestimonials() {
               />
               <div>
                 <h2 className="font-semibold text-gray-800">{t.name}</h2>
+                <p className="text-sm text-gray-600">{t.title}</p>
                 <span
                   className={`text-sm capitalize ${
                     statusColors[t.status as keyof typeof statusColors]

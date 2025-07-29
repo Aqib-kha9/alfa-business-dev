@@ -1,10 +1,12 @@
 import { stat } from "fs";
+import { title } from "process";
 import z from "zod";
 
 export const testimonialSchema = z.object({
     name: z.string().min(2).max(100),
     email: z.string().email(),
-    message: z.string().min(10).max(500),
+    title: z.string().min(2).max(50),
+    message: z.string().min(10).max(212),
     image: z
         .array(z.string().url({ message: 'image must be a valid URL' }))
         .min(1, 'At least one image is required')

@@ -7,16 +7,16 @@ import Swal from 'sweetalert2';
 import { FaPlus } from 'react-icons/fa';
 import ActionMenu from '../components/ActionMenu';
 
-const tabs = ['All Requests', 'Pending', 'Approved'];
+const tabs = ['All Requests', 'pending', 'approved'];
 
 type Booking = {
   _id: string;
   fullName: string;
   email: string;
-  phone?: string;
+  number: string;
   preferredDate: string;
   preferredTime: string;
-  status?: 'Pending' | 'Approved';
+  status?: 'pending' | 'approved';
 };
 
 export default function TourRequestsPage() {
@@ -78,8 +78,8 @@ export default function TourRequestsPage() {
     selectedTab === 'All Requests'
       ? data
       : data.filter(
-          (d) => (d.status || 'Pending').toLowerCase() === selectedTab.toLowerCase()
-        );
+        (d) => (d.status || 'pending').toLowerCase() === selectedTab.toLowerCase()
+      );
 
   return (
     <div className="p-6 mx-auto">
@@ -104,7 +104,9 @@ export default function TourRequestsPage() {
                 : 'text-gray-700 border-gray-300 hover:bg-gray-100'
             )}
           >
-            {tab}
+            <span className='capitalize'>
+              {tab}
+            </span>
           </button>
         ))}
       </div>
@@ -143,25 +145,25 @@ export default function TourRequestsPage() {
                   <td className="p-3">{row.fullName}</td>
                   <td className="p-3">
                     <div>{row.email}</div>
-                    <div className="text-xs text-gray-500">{row.phone || 'N/A'}</div>
+                    <div className="text-xs text-gray-500">{row.number || 'N/A'}</div>
                   </td>
                   <td className="p-3">{row.preferredDate}</td>
                   <td className="p-3">{row.preferredTime}</td>
                   <td className="p-3">
                     <span
                       className={clsx(
-                        'px-2 py-1 rounded-full text-xs font-medium',
-                        row.status === 'Approved'
+                        'px-2 py-1 rounded-full text-xs font-medium capitalize',
+                        row.status === 'approved'
                           ? 'bg-green-100 text-green-700'
                           : 'bg-yellow-100 text-yellow-700'
                       )}
                     >
-                      {row.status || 'Pending'}
+                      {row.status || 'pending'}
                     </span>
                   </td>
                   <td className="p-3 text-center">
                     <ActionMenu
-                      onEdit={() => router.push(`/admin/tour/edit?id=${row._id}`)}
+                      onEdit={() => router.push(`/admin/tour/edit/${row._id}`)}
                       onDelete={() => handleDelete(row._id, row.fullName)}
                     />
                   </td>
