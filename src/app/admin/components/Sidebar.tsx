@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, PlusCircle, LogOut, LayoutDashboard } from 'lucide-react';
+import { Home, PlusCircle, LogOut, LayoutDashboard, Image } from 'lucide-react';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
@@ -13,6 +13,7 @@ const menu = [
   { icon: <LuWallet size={20} />, label: 'Pricing Plans', href: '/admin/plans' },
   { icon: <PlusCircle size={20} />, label: 'Tour Requests', href: '/admin/tour' },
   { icon: <Home size={20} />, label: 'Amenities', href: '/admin/amenities' },
+  { icon: <Image size={20} />, label: 'Gallery', href: '/admin/gallery' },
   { icon: <TiMessage  size={20} />, label: 'Testimonials', href: '/admin/testimonials' },
   { icon: <TiContacts  size={20} />, label: 'Contact', href: '/admin/contact' },
 ];

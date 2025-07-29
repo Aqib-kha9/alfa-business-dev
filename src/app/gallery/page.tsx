@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const categories = ["All", "Workspaces", "Meeting Rooms", "Amenities", "Lounge", "Common Areas"];
-
+type Gallery = {
+  imageType: string;
+  images: string[];
+  createdAt?: string;
+};
 const galleryItems = [
   { image: "/Ample.jpg", category: "Workspaces" },
   { image: "/conference.jpg", category: "Lounge" },
@@ -28,6 +32,8 @@ export default function Gallery() {
   const [selected, setSelected] = useState("All");
   const [showModal, setShowModal] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [images, setImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const filteredItems = selected === "All"
     ? galleryItems
@@ -46,6 +52,20 @@ export default function Gallery() {
     setCurrentIndex((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
   };
 
+   useEffect(() => {
+      fetch('/api/gallery')
+        .then((res) => res.json())
+        .then((data: Gallery[]) => {
+          // Combine all image arrays from all gallery objects
+          const allImages = data.flatMap((item) => item.images);
+          setImages(allImages);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error('Fetch error:', err);
+          setLoading(false);
+        });
+    }, []);
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 text-center">
