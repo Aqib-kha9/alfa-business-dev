@@ -5,39 +5,45 @@ import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const categories = ["All", "Workspaces", "Meeting Rooms", "Amenities", "Lounge", "Common Areas"];
+
 type Gallery = {
   imageType: string;
   images: string[];
-  createdAt?: string;
 };
-const galleryItems = [
-  { image: "/Ample.jpg", category: "Workspaces" },
-  { image: "/conference.jpg", category: "Lounge" },
-  { image: "/Dedicated_Desk.jpg", category: "Amenities" },
-  { image: "/desk.jpg", category: "Meeting Rooms" },
-  { image: "/extra.jpg", category: "Common Areas" },
-  { image: "/img1.jpeg", category: "Amenities" },
-  { image: "/img2.avif", category: "Workspaces" },
-  { image: "/img3.jpg", category: "Lounge" },
-  { image: "/Man1.jpg", category: "Common Areas" },
-  { image: "/Man2.jpg", category: "Meeting Rooms" },
-  { image: "/Man3.jpg", category: "Workspaces" },
-  { image: "/office_tour.jpg", category: "Amenities" },
-  { image: "/Prime.jpeg", category: "Common Areas" },
-  { image: "/private_cabin.jpg", category: "Meeting Rooms" },
-  { image: "/woman1.avif", category: "Lounge" },
-];
 
 export default function Gallery() {
   const [selected, setSelected] = useState("All");
+  const [galleryData, setGalleryData] = useState<Gallery[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [images, setImages] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  const filteredItems = selected === "All"
-    ? galleryItems
-    : galleryItems.filter((item) => item.category === selected);
+  // Fetch gallery data from API
+  useEffect(() => {
+    fetch("/api/gallery")
+      .then((res) => res.json())
+      .then((data: Gallery[]) => {
+        setGalleryData(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Fetch error:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  // Combine all gallery images into a flat array with their category
+  const allImages = galleryData.flatMap((item) =>
+    item.images.map((url) => ({
+      url,
+      category: item.imageType,
+    }))
+  );
+
+  // Filter images by selected category
+  const filteredImages = selected === "All"
+    ? allImages
+    : allImages.filter((img) => img.category === selected);
 
   const handleImageClick = (index: number) => {
     setCurrentIndex(index);
@@ -45,27 +51,13 @@ export default function Gallery() {
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % filteredItems.length);
+    setCurrentIndex((prev) => (prev + 1) % filteredImages.length);
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
+    setCurrentIndex((prev) => (prev - 1 + filteredImages.length) % filteredImages.length);
   };
 
-   useEffect(() => {
-      fetch('/api/gallery')
-        .then((res) => res.json())
-        .then((data: Gallery[]) => {
-          // Combine all image arrays from all gallery objects
-          const allImages = data.flatMap((item) => item.images);
-          setImages(allImages);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error('Fetch error:', err);
-          setLoading(false);
-        });
-    }, []);
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 text-center">
@@ -95,29 +87,34 @@ export default function Gallery() {
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredItems.map((item, index) => (
-            <div
-              key={index}
-              onClick={() => handleImageClick(index)}
-              className="cursor-pointer rounded-lg overflow-hidden shadow hover:shadow-lg transition"
-            >
-              <Image
-                src={item.image}
-                alt={`Gallery ${index + 1}`}
-                width={400}
-                height={250}
-                className="w-full h-[250px] object-cover"
-              />
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <p className="text-gray-500">Loading...</p>
+        ) : filteredImages.length === 0 ? (
+          <p className="text-gray-500 text-lg">No images available</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredImages.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => handleImageClick(index)}
+                className="cursor-pointer rounded-lg overflow-hidden shadow hover:shadow-lg transition"
+              >
+                <Image
+                  src={item.url}
+                  alt={`Gallery ${index + 1}`}
+                  width={400}
+                  height={250}
+                  className="w-full h-[250px] object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Modal Viewer */}
-      {showModal && (
+      {showModal && filteredImages.length > 0 && (
         <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4">
-          {/* Close Button */}
           <button
             onClick={() => setShowModal(false)}
             className="absolute top-4 right-4 text-white hover:text-gray-300"
@@ -125,7 +122,6 @@ export default function Gallery() {
             <X size={28} />
           </button>
 
-          {/* Navigation Arrows */}
           <div className="flex items-center justify-between w-full max-w-5xl relative">
             <button
               onClick={handlePrev}
@@ -136,15 +132,14 @@ export default function Gallery() {
 
             <div className="flex flex-col items-center max-w-3xl w-full">
               <Image
-                src={filteredItems[currentIndex].image}
+                src={filteredImages[currentIndex].url}
                 alt="Preview"
                 width={1000}
                 height={600}
                 className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
               />
-              {/* Image Count */}
               <p className="text-white mt-2 text-sm">
-                Image {currentIndex + 1} of {filteredItems.length}
+                Image {currentIndex + 1} of {filteredImages.length}
               </p>
             </div>
 

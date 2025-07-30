@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import ActionMenu from '../components/ui/ActionMenu';
+import Swal from 'sweetalert2';
 
 export type Plan = {
   _id: string;
@@ -61,27 +62,37 @@ export default function ProductPage() {
     router.push("/admin/plans/add");
   };
 
-  const handleDelete = async (slug: string, title: string) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete \"${title}\"?`);
-    if (!confirmDelete) return;
+const handleDelete = async (slug: string, title: string) => {
+  const result = await Swal.fire({
+    title: `Delete "${title}"?`,
+    text: "This action cannot be undone!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+  });
 
-    try {
-      setDeletingId(slug);
-      const res = await fetch(`/api/plans/${slug}`, { method: 'DELETE' });
-      const data = await res.json();
+  if (!result.isConfirmed) return;
 
-      if (res.ok) {
-        toast.success(`Deleted \"${title}\"`);
-        fetchPlans();
-      } else {
-        toast.error(data.error || 'Delete failed');
-      }
-    } catch (err) {
-      toast.error("Delete request failed");
-    } finally {
-      setDeletingId(null);
+  try {
+    setDeletingId(slug);
+    const res = await fetch(`/api/plans/${slug}`, { method: 'DELETE' });
+    const data = await res.json();
+
+    if (res.ok) {
+      await Swal.fire('Deleted!', `"${title}" has been deleted.`, 'success');
+      fetchPlans();
+    } else {
+      Swal.fire('Error', data.error || 'Delete failed', 'error');
     }
-  };
+  } catch (err) {
+    Swal.fire('Error', 'Delete request failed', 'error');
+  } finally {
+    setDeletingId(null);
+  }
+};
+
 
   const renderCompactList = (items: string[] = []) => {
     if (!items.length) return <span className="text-gray-400">-</span>;

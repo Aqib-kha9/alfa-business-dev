@@ -2,7 +2,7 @@
 
 import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-
+import Swal from 'sweetalert2';
 export default function EditAmenities() {
   const router = useRouter();
   const params = useParams();
@@ -51,38 +51,69 @@ export default function EditAmenities() {
     }
   };
 
-  const handleImageDelete = async () => {
-    const imageUrl = formData.image[0];
-    if (!imageUrl) return;
+ const handleImageDelete = async () => {
+  const imageUrl = formData.image[0];
+  if (!imageUrl) return;
 
-    try {
-      const res = await fetch('/api/cloudinary/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl }),
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will delete the image permanently.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const res = await fetch('/api/cloudinary/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageUrl }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setFormData((prev) => ({ ...prev, image: [] }));
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Image has been deleted.',
+        confirmButtonColor: '#2d386a',
       });
-      const result = await res.json();
-
-      if (res.ok) {
-        setFormData((prev) => ({ ...prev, image: [] }));
-      } else {
-        alert(result.error || 'Failed to delete image');
-      }
-    } catch (err) {
-      console.error('Delete failed', err);
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: data.error || 'Failed to delete image',
+        confirmButtonColor: '#d33',
+      });
     }
-  };
+  } catch (err) {
+    console.error('Delete failed', err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Something went wrong while deleting.',
+    });
+  }
+};
+
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    const body = new FormData();
-    body.append('amenitiesName', formData.amenitiesName);
-    body.append('tag', formData.tag);
-    body.append('description', formData.description);
-    if (imageFile) body.append('image', imageFile);
+  const body = new FormData();
+  body.append('amenitiesName', formData.amenitiesName);
+  body.append('tag', formData.tag);
+  body.append('description', formData.description);
+  if (imageFile) body.append('image', imageFile);
 
+  try {
     const res = await fetch(`/api/amenities/${slug}`, {
       method: 'PUT',
       body,
@@ -92,11 +123,33 @@ export default function EditAmenities() {
     setIsSubmitting(false);
 
     if (res.ok) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Amenity Updated!',
+        text: 'Your changes have been saved successfully.',
+        confirmButtonColor: '#2d386a',
+      });
       router.push('/admin/amenities');
     } else {
-      alert(data.error || 'Update failed');
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: data.error || 'Failed to update the amenity.',
+        confirmButtonColor: '#d33',
+      });
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setIsSubmitting(false);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Something went wrong.',
+      confirmButtonColor: '#d33',
+    });
+  }
+};
+
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">

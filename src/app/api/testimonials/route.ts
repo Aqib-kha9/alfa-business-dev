@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import cloudinary from '@/app/lib/cloudinary';
 import clientPromise from '@/app/lib/mongodb';
-
+import { ObjectId } from 'mongodb';
 export const config = {
   api: {
     bodyParser: false,
@@ -79,3 +79,29 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch testimonials' }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get('id');
+
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Valid testimonial ID is required' }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db();
+
+    const result = await db.collection('testimonials').deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Testimonial deleted successfully' }, { status: 200 });
+  } catch (error) {
+    console.error('DELETE testimonials error:', error);
+    return NextResponse.json({ error: 'Failed to delete testimonial' }, { status: 500 });
+  }
+}
+

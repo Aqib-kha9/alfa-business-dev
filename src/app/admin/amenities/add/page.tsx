@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import Swal from 'sweetalert2';
 
 export default function AddAmenity() {
   const router = useRouter();
@@ -41,22 +42,34 @@ export default function AddAmenity() {
     }
 
     try {
-      const res = await fetch('/api/amenities', {
-        method: 'POST',
-        body: formData,
-      });
+  const res = await fetch('/api/amenities', {
+    method: 'POST',
+    body: formData,
+  });
 
-      const data = await res.json();
+  const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+  if (!res.ok) throw new Error(data.error || 'Something went wrong');
 
-      alert('Amenity added!');
-      setForm({ amenitiesName: '', tag: '', description: '', imageUrl: '' });
-      setImageFile(null);
-      router.push('/admin/amenities');
-    } catch (err: any) {
-      alert(`Error: ${err.message}`);
-    } finally {
+  await Swal.fire({
+    icon: 'success',
+    title: 'Amenity Added!',
+    text: 'Your new amenity has been successfully added.',
+    confirmButtonColor: '#2d386a',
+  });
+
+  setForm({ amenitiesName: '', tag: '', description: '', imageUrl: '' });
+  setImageFile(null);
+  router.push('/admin/amenities');
+} catch (err: any) {
+  Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: err.message || 'Something went wrong.',
+    confirmButtonColor: '#d33',
+  });
+}
+ finally {
       setIsSubmitting(false);
     }
   };

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { planSchema } from '@/app/lib/schemas/planSchema';
+import Swal from 'sweetalert2';
 
 export default function AddEditPlanPage() {
   const router = useRouter();
@@ -142,7 +143,12 @@ export default function AddEditPlanPage() {
       });
       setErrors(fieldErrors);
       console.log(fieldErrors);
-      toast.error("Please fix the errors");
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Validation Error',
+        text: 'Please fix the highlighted fields before submitting.',
+      });
+
       setIsSubmitting(false);
       return;
     }
@@ -166,12 +172,23 @@ export default function AddEditPlanPage() {
 
       if (!res.ok) throw new Error('Something went wrong');
 
-      toast.success(`Plan ${planId ? 'updated' : 'created'} successfully!`);
+      await Swal.fire({
+        icon: 'success',
+        title: `Plan ${planId ? 'updated' : 'created'} successfully!`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
       router.push('/admin/plans');
     } catch (err) {
       console.error(err);
-      toast.error('Error saving plan');
-    } finally {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error saving plan',
+        text: 'Please try again later.',
+      });
+    }
+    finally {
       setIsSubmitting(false);
     }
   };
@@ -333,8 +350,8 @@ export default function AddEditPlanPage() {
             type="submit"
             disabled={isSubmitting}
             className={`px-6 py-2 flex items-center justify-center gap-2 rounded-md text-white transition-colors ${isSubmitting
-                ? 'bg-[#2d386a] cursor-not-allowed opacity-75'
-                : 'bg-[#2d386a] hover:bg-[#1f2950]'
+              ? 'bg-[#2d386a] cursor-not-allowed opacity-75'
+              : 'bg-[#2d386a] hover:bg-[#1f2950]'
               }`}
           >
             {isSubmitting && (

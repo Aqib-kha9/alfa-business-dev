@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FaCheck, FaEdit, FaTimes } from 'react-icons/fa';
 import { HiOutlinePlus } from 'react-icons/hi';
 import { toast } from 'sonner';
+import Swal from 'sweetalert2';
 
 const statusColors: Record<'approved' | 'pending' | 'rejected', string> = {
   approved: 'text-green-600',
@@ -27,7 +28,6 @@ export default function ClientTestimonials() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [filter, setFilter] = useState('All');
 
-  useEffect(() => {
   const fetchTestimonials = async () => {
     try {
       const res = await fetch('/api/testimonials');
@@ -37,21 +37,60 @@ export default function ClientTestimonials() {
       setTestimonials(data);
     } catch (err) {
       console.error('Failed to load testimonials:', err);
-      toast.error('Could not load testimonials');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Could not load testimonials. Please try again later.',
+      });
     }
-  };
 
-  fetchTestimonials();
-}, []);
+  };
+  useEffect(() => {
+
+    fetchTestimonials();
+  }, []);
 
   const handleEdit = (id: string) => {
-  router.push(`/admin/testimonials/edit/${id}`);
+    router.push(`/admin/testimonials/edit/${id}`);
+  };
+  const handleDelete = async (id: string) => {
+  const confirmed = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This testimonial will be permanently deleted!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+  });
+
+  if (!confirmed.isConfirmed) return;
+
+  try {
+    const res = await fetch(`/api/testimonials?id=${id}`, {
+      method: 'DELETE',
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      Swal.fire('Deleted!', data.message, 'success');
+      // Refresh or update state here
+    } else {
+      Swal.fire('Error', data.error, 'error');
+    }
+  } catch (error) {
+    console.error('Delete failed:', error);
+    Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+  }
 };
 
+
+
   const filteredTestimonials =
-  filter === 'All'
-    ? testimonials
-    : testimonials.filter(
+    filter === 'All'
+      ? testimonials
+      : testimonials.filter(
         (t) => t.status?.toLowerCase() === filter.toLowerCase()
       );
 
@@ -98,9 +137,8 @@ export default function ClientTestimonials() {
                 <h2 className="font-semibold text-gray-800">{t.name}</h2>
                 <p className="text-sm text-gray-600">{t.title}</p>
                 <span
-                  className={`text-sm capitalize ${
-                    statusColors[t.status as keyof typeof statusColors]
-                  }`}
+                  className={`text-sm capitalize ${statusColors[t.status as keyof typeof statusColors]
+                    }`}
                 >
                   {t.status}
                 </span>
@@ -108,14 +146,21 @@ export default function ClientTestimonials() {
             </div>
             <p className="text-sm text-gray-700">{t.message}</p>
             <div className="flex flex-wrap gap-2 mt-auto">
-             
+
               <button
                 onClick={() => handleEdit(t._id)}
                 className="flex items-center px-3 py-1 text-sm rounded bg-gray-100 text-gray-800 hover:bg-gray-200"
               >
                 <FaEdit className="inline mr-1" /> Edit
               </button>
-              
+              <button
+  onClick={() => handleDelete(t._id)}
+  className="flex items-center px-3 py-1 text-sm rounded bg-red-100 text-red-800 hover:bg-red-200"
+>
+  <FaTimes className="inline mr-1" /> Delete
+</button>
+
+
             </div>
           </div>
         ))}

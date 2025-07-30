@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GallerySchema } from "@/app/lib/schemas/gallerySchema";
 import clientPromise from "@/app/lib/mongodb";
-
+import { ObjectId } from "mongodb";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -44,3 +44,29 @@ export async function GET() {
     return NextResponse.json({ error: "Failed to fetch galleries." }, { status: 500 });
   }
 }
+export async function PUT(req: NextRequest) {
+  try {
+    const { id, image } = await req.json();
+    if (!id || !image) {
+      return NextResponse.json({ error: "Gallery ID and image are required" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db();
+
+    const result = await db.collection("galleries").updateOne(
+      { _id: new ObjectId(id) },
+      { $pull: { images: image }, $set: { updatedAt: new Date().toISOString() } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return NextResponse.json({ error: "Image not found or already removed" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Image removed from gallery" }, { status: 200 });
+  } catch (error) {
+    console.error("Gallery PUT error:", error);
+    return NextResponse.json({ error: "Failed to update gallery." }, { status: 500 });
+  }
+}
+

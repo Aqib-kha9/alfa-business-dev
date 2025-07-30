@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useRef } from 'react';
+import Swal from 'sweetalert2';
 
 export default function AddTestimonial() {
   const router = useRouter();
@@ -35,31 +36,42 @@ export default function AddTestimonial() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      const formData = new FormData();
-      formData.append('name', form.name);
-      formData.append('title', form.title);
-      formData.append('email', form.email);
-      formData.append('message', form.message);
-      if (form.image) formData.append('image', form.image);
+   try {
+  const formData = new FormData();
+  formData.append('name', form.name);
+  formData.append('title', form.title);
+  formData.append('email', form.email);
+  formData.append('message', form.message);
+  if (form.image) formData.append('image', form.image);
 
-      const res = await fetch('/api/testimonials', {
-        method: 'POST',
-        body: formData,
-      });
+  const res = await fetch('/api/testimonials', {
+    method: 'POST',
+    body: formData,
+  });
 
-      const data = await res.json();
-      setIsSubmitting(false);
+  const data = await res.json();
+  setIsSubmitting(false);
 
-      if (!res.ok) throw new Error(data.error || 'Submission failed');
+  if (!res.ok) throw new Error(data.error || 'Submission failed');
 
-      alert('Testimonial submitted successfully!');
-      router.push('/admin/testimonials');
-    } catch (err) {
-      console.error('Error:', err);
-      alert('Something went wrong. Please try again.');
-      setIsSubmitting(false);
-    }
+  await Swal.fire({
+    icon: 'success',
+    title: 'Success!',
+    text: 'Testimonial submitted successfully!',
+  });
+
+  router.push('/admin/testimonials');
+} catch (err) {
+  console.error('Error:', err);
+  setIsSubmitting(false);
+
+  Swal.fire({
+    icon: 'error',
+    title: 'Error!',
+    text: 'Something went wrong. Please try again.',
+  });
+}
+
   };
 
   return (

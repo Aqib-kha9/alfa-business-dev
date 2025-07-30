@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 import { number } from 'zod';
 
 export default function EditTour() {
@@ -41,7 +42,7 @@ export default function EditTour() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setLoading(true);
 
@@ -52,20 +53,33 @@ export default function EditTour() {
       body: JSON.stringify(form),
     });
 
-    const text = await res.text(); // safer than .json()
+    const text = await res.text();
     const result = text ? JSON.parse(text) : {};
 
-    // if (!res.ok) throw new Error(result.error || 'Failed to update');
+    // ✅ Show success alert
+    await Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: 'Booking updated successfully!',
+      confirmButtonColor: '#2d386a',
+    });
 
-    alert('Booking updated successfully');
     router.push('/admin/tour');
   } catch (error: any) {
     console.error('Update error:', error);
-    alert(error.message || 'Error occurred while updating');
+
+    // ❌ Show error alert
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.message || 'Error occurred while updating',
+      confirmButtonColor: '#d33',
+    });
   } finally {
     setLoading(false);
   }
 };
+
 
 
   // 👇 same form rendering as before

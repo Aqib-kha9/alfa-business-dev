@@ -6,8 +6,41 @@ import {
   FaLinkedinIn,
   FaYoutube,
 } from "react-icons/fa";
+import { useState } from "react";
 
 export default function Footer() {
+  const [email, setEmail] = useState('');
+  const [agree, setAgree] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!agree) {
+      setMessage("Please accept the terms & conditions.");
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setMessage("Subscribed successfully!");
+        setEmail('');
+        setAgree(false);
+      } else {
+        setMessage(data?.error || "Something went wrong.");
+      }
+    } catch (err) {
+      setMessage("Server error. Please try again.");
+    }
+  };
   return (
     <footer className="bg-gray-50 text-black pt-14 pb-10">
       <div className="max-w-7xl mx-auto px-6 lg:px-16 grid grid-cols-1 md:grid-cols-12 gap-8">
@@ -68,10 +101,8 @@ export default function Footer() {
         {/* Subscribe Form - Responsive & Clean */}
         <div className="md:col-span-4 space-y-4">
           <h4 className="font-bold text-gray-900 mb-2">Stay Updated</h4>
-          <form className="flex flex-col gap-3 w-full">
-            {/* Input + Button Wrapper */}
+          <form className="flex flex-col gap-3 w-full" onSubmit={handleSubmit}>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:items-stretch w-full">
-              {/* Icon + Input */}
               <div className="flex items-center w-full sm:flex-1 bg-white border border-gray-300 rounded sm:rounded-r-none shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-[#2d386a]">
                 <div className="flex items-center px-4 text-gray-500">
                   <Mail size={18} />
@@ -79,12 +110,13 @@ export default function Footer() {
                 <input
                   type="email"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
                   className="w-full px-4 py-2.5 text-sm text-gray-700 bg-white outline-none"
                 />
               </div>
 
-              {/* Button */}
               <button
                 type="submit"
                 className="w-full sm:w-auto px-6 py-2.5 text-sm font-semibold text-white bg-[#2d386a] hover:bg-[#1f2a4f] transition-all rounded sm:rounded-l-none"
@@ -93,15 +125,26 @@ export default function Footer() {
               </button>
             </div>
 
-            {/* Terms Label */}
             <label className="text-xs text-gray-600 flex items-start gap-2">
-              <input type="checkbox" className="mt-1" required />
+              <input
+                type="checkbox"
+                className="mt-1"
+                required
+                checked={agree}
+                onChange={() => setAgree(!agree)}
+              />
               I have read and agree to the{" "}
               <Link href="/terms-of-use" className="underline text-[#2d386a]">
                 terms & conditions
               </Link>.
             </label>
+
+            {/* Show message */}
+            {message && (
+              <p className="text-xs text-green-600 mt-1">{message}</p>
+            )}
           </form>
+
         </div>
 
       </div>

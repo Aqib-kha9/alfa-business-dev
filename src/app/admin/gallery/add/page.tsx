@@ -1,14 +1,16 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+  import Swal from 'sweetalert2';
 
-const imageTypeOptions = ["Workspaces", "Meeting Rooms", "Amenities", "Lounge", "Common"];
+const imageTypeOptions = ["Workspaces", "Meeting Rooms", "Amenities", "Lounge", "Common Areas"];
 
 export default function AddGalleryPage() {
   const [imageType, setImageType] = useState("Workspaces");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-
+  const router = useRouter();
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -34,26 +36,48 @@ export default function AddGalleryPage() {
     setIsUploading(false);
   };
 
-  const handleSubmit = async () => {
-    if (imageUrls.length === 0) return alert("Please upload images");
 
-    const res = await fetch("/api/gallery", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        imageType, // send selected type
-        images: imageUrls,
-      }),
+const handleSubmit = async () => {
+  if (imageUrls.length === 0) {
+    return Swal.fire({
+      icon: 'warning',
+      title: 'No Images',
+      text: 'Please upload at least one image before submitting.',
+      confirmButtonColor: '#2d386a',
     });
+  }
 
-    const result = await res.json();
-    if (res.ok) {
-      alert("Gallery saved!");
-      setImageUrls([]);
-    } else {
-      alert("Error: " + result.error);
-    }
-  };
+  const res = await fetch("/api/gallery", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      imageType,
+      images: imageUrls,
+    }),
+  });
+
+  const result = await res.json();
+
+  if (res.ok) {
+    await Swal.fire({
+      icon: 'success',
+      title: 'Gallery Saved!',
+      text: 'Your images were successfully added to the gallery.',
+      confirmButtonColor: '#2d386a',
+    });
+    router.push('/admin/gallery');
+    setImageUrls([]);
+    
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Upload Failed',
+      text: result.error || 'An error occurred while saving the gallery.',
+      confirmButtonColor: '#d33',
+    });
+  }
+};
+
 
   return (
     <div className="p-6">

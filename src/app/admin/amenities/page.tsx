@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PlusCircle } from 'lucide-react';
-
+import Swal from 'sweetalert2';
 type Amenity = {
   _id: string;
   amenitiesName: string;
@@ -37,25 +37,51 @@ export default function AmenitiesPage() {
     fetchAmenities();
   }, []);
 
-  const handleDelete = async (slug: string) => {
-    const confirmed = window.confirm('Are you sure you want to delete this amenity?');
-    if (!confirmed) return;
 
-    try {
-      const res = await fetch(`/api/amenities/${slug}`, { method: 'DELETE' });
+const handleDelete = async (slug: string) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will permanently delete the amenity.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+  });
 
-      if (res.ok) {
-        alert('Amenity deleted!');
-        await fetchAmenities(); //  Re-fetch to refresh UI immediately
-      } else {
-        const err = await res.json();
-        alert(err.error || 'Failed to delete');
-      }
-    } catch (err) {
-      console.error('Delete error:', err);
-      alert('Something went wrong');
+  if (!result.isConfirmed) return;
+
+  try {
+    const res = await fetch(`/api/amenities/${slug}`, { method: 'DELETE' });
+
+    if (res.ok) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Amenity has been deleted successfully.',
+        confirmButtonColor: '#2d386a',
+      });
+      await fetchAmenities(); // Refresh UI
+    } else {
+      const err = await res.json();
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to delete',
+        text: err.error || 'Something went wrong.',
+        confirmButtonColor: '#d33',
+      });
     }
-  };
+  } catch (err) {
+    console.error('Delete error:', err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Something went wrong. Please try again later.',
+      confirmButtonColor: '#d33',
+    });
+  }
+};
+
 
   const handleEdit = (slug: string) => {
     router.push(`/admin/amenities/edit/${slug}`);
