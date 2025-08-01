@@ -10,6 +10,12 @@ type Feature = {
   desc: string;
 };
 
+type AmenityAPIResponse = {
+  image: string[];
+  amenitiesName: string;
+  description: string;
+};
+
 interface WhyChooseSectionProps {
   heading?: string;
   subheading?: string;
@@ -29,22 +35,23 @@ export default function WhyChooseSection({
       try {
         const res = await fetch('/api/amenities');
         if (!res.ok) throw new Error('Failed to fetch amenities');
-        const data = await res.json();
 
-        // Transform the API data into FeatureCard format
-        const formatted = data.map((item: any) => ({
-          image: item.image[0] || '', // fallback in case it's empty
+        const data: AmenityAPIResponse[] = await res.json();
+
+        const formatted: Feature[] = data.map((item) => ({
+          image: item.image?.[0] || '',
           title: item.amenitiesName,
           desc: item.description,
         }));
 
         setAmenities(formatted);
-      } catch (error) {
+      } catch {
         toast.error('Failed to fetch amenities');
       } finally {
         setLoading(false);
       }
     };
+
     fetchAmenities();
   }, []);
 

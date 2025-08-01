@@ -23,8 +23,8 @@ export default function EditPlanPage() {
       if (!res.ok) throw new Error('Plan not found');
       const data = await res.json();
       setPlan(data);
-    } catch (err) {
-      toast.error('Failed to load plan');
+    } catch (error) {
+      toast.error((error as Error).message || 'Failed to load plan');
       router.push('/admin/plans');
     } finally {
       setLoading(false);

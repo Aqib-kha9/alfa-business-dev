@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type Contact = {
@@ -16,7 +15,6 @@ type Contact = {
 };
 
 export default function ContactDetails() {
-  const router = useRouter();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -29,8 +27,12 @@ export default function ContactDetails() {
 
         if (!res.ok) throw new Error(data.error || 'Failed to load contacts');
         setContacts(data.messages);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('An unexpected error occurred.');
+        }
       } finally {
         setLoading(false);
       }
@@ -39,42 +41,41 @@ export default function ContactDetails() {
   }, []);
 
   const handleDelete = async (id: string, name: string) => {
-  try {
-    const res = await fetch(`/api/contact/${id}`, {
-      method: 'DELETE',
-    });
+    try {
+      const res = await fetch(`/api/contact/${id}`, {
+        method: 'DELETE',
+      });
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to delete contact');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete contact');
 
-    setContacts((prev) => prev.filter((c) => c._id !== id));
-    toast.success(`Deleted contact: ${name}`);
-  } catch (error: any) {
-    toast.error(error.message);
-  }
-};
+      setContacts((prev) => prev.filter((c) => c._id !== id));
+      toast.success(`Deleted contact: ${name}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unexpected error';
+      toast.error(message);
+    }
+  };
 
+  const handleDone = async (id: string) => {
+    try {
+      const res = await fetch(`/api/contact/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'done' }),
+      });
 
- const handleDone = async (id: string) => {
-  try {
-    const res = await fetch(`/api/contact/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'done' }),
-    });
+      if (!res.ok) throw new Error('Failed to update contact');
 
-    if (!res.ok) throw new Error('Failed to update contact');
-
-    setContacts((prev) =>
-      prev.map((c) => (c._id === id ? { ...c, status: 'done' } : c))
-    );
-    toast.success('Marked as done');
-  } catch (err: any) {
-    toast.error(err.message);
-  }
-};
-
-
+      setContacts((prev) =>
+        prev.map((c) => (c._id === id ? { ...c, status: 'done' } : c))
+      );
+      toast.success('Marked as done');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unexpected error';
+      toast.error(message);
+    }
+  };
 
   return (
     <div className="p-6 mx-auto">
@@ -131,7 +132,7 @@ export default function ContactDetails() {
                     {row.status !== 'done' && (
                       <button
                         onClick={() => handleDone(row._id)}
-                        className="px-2 py-1 bg-black-100 text-white-700 text-xs rounded "
+                        className="px-2 py-1 bg-black-100 text-white-700 text-xs rounded"
                       >
                         Mark as Done
                       </button>

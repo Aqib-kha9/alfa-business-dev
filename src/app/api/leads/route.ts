@@ -84,8 +84,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // ❌ Method Not Allowed
     res.setHeader('Allow', ['PUT', 'DELETE']);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[Plan API Error]', err);
-    return res.status(500).json({ error: 'Server Error', details: err.message });
+    return res.status(500).json({ error: 'Server Error', details: (err as Error).message });
   }
 }

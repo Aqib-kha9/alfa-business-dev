@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import Swal from 'sweetalert2';
-import { FaPlus } from 'react-icons/fa';
 import ActionMenu from '../components/ActionMenu';
 
 const tabs = ['All Requests', 'pending', 'approved'];
@@ -33,8 +32,8 @@ export default function TourRequestsPage() {
         if (!res.ok) throw new Error('Failed to fetch tour requests');
         const json = await res.json();
         setData(json.bookings || []);
-      } catch (err: any) {
-        setError(err.message || 'Unknown error');
+      } catch (err: unknown) {
+        setError((err as Error).message || 'Unknown error');
       } finally {
         setLoading(false);
       }

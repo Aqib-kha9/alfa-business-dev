@@ -65,14 +65,14 @@ const handleSubmit = async (e: React.FormEvent) => {
     });
 
     router.push('/admin/tour');
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Update error:', error);
 
-    // ❌ Show error alert
+    //  Show error alert
     Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: error.message || 'Error occurred while updating',
+      text: (error as Error).message || 'Error occurred while updating',
       confirmButtonColor: '#d33',
     });
   } finally {

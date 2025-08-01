@@ -3,7 +3,14 @@ import clientPromise from '@/app/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import cloudinary from '@/app/lib/cloudinary';
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+type CloudinaryUploadResult = {
+  secure_url: string;
+};
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const id = params.id;
     if (!ObjectId.isValid(id)) {
@@ -19,7 +26,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const status = formData.get('status') as string;
     const imageFile = formData.get('image') as File | null;
 
-    const updateData: any = {
+    const updateData: Record<string, string> = {
       name,
       email,
       title,
@@ -31,21 +38,20 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       const arrayBuffer = await imageFile.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      const uploaded = await new Promise((resolve, reject) => {
+      const uploaded: CloudinaryUploadResult = await new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
           {
             folder: 'testimonials',
             resource_type: 'image',
           },
           (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
+            if (error || !result) return reject(error);
+            resolve(result as CloudinaryUploadResult);
           }
         ).end(buffer);
       });
 
-      const { secure_url } = uploaded as any;
-      updateData.image = secure_url;
+      updateData.image = uploaded.secure_url;
     }
 
     const client = await clientPromise;
@@ -66,7 +72,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const client = await clientPromise;
     const db = client.db();

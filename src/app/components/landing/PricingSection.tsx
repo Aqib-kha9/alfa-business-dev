@@ -25,6 +25,7 @@ export default function PopularPlans() {
         const data = await res.json();
         setPlans(data);
       } catch (error) {
+        console.error(" Error fetching plans:", error);
         toast.error('Failed to fetch plans');
       } finally {
         setLoading(false);

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PlusCircle } from 'lucide-react';
 import Swal from 'sweetalert2';
+import Image from 'next/image';
 type Amenity = {
   _id: string;
   amenitiesName: string;
@@ -105,7 +106,7 @@ const handleDelete = async (slug: string) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {amenities.map((amenity) => (
             <div key={amenity._id} className="bg-white rounded shadow hover:shadow-md transition">
-              <img
+              <Image
                 src={Array.isArray(amenity.image) && amenity.image[0] ? amenity.image[0] : '/placeholder.jpg'}
                 alt={amenity.amenitiesName}
               />

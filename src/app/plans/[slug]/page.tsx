@@ -8,15 +8,16 @@ import PlanPricing from '@/app/components/reusable/PlanPricing';
 import Image from 'next/image';
 import Head from 'next/head';
 import PlanDetailsSkeleton from '@/app/components/skeleton/PlanDetailsSkeleton';
+import { Plan } from '@/app/types/plan'; // ✅ Make sure you have a type
 
 export default function PlanDetailsPage() {
   const { slug } = useParams();
   const router = useRouter();
 
-  const [plan, setPlan] = useState<any | undefined>(undefined);
+  const [plan, setPlan] = useState<Plan | undefined>(undefined);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // <-- Added missing state
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchPlan() {
@@ -29,7 +30,7 @@ export default function PlanDetailsPage() {
         console.error('Failed to fetch plan:', err);
         setPlan(undefined);
       } finally {
-        setIsLoading(false); // <-- Ensure loading ends
+        setIsLoading(false);
       }
     }
     if (slug) fetchPlan();
@@ -40,18 +41,20 @@ export default function PlanDetailsPage() {
   }
 
   const handlePrev = () => {
-    if (plan.images && plan.images.length > 1 && selectedImage) {
-      const currentIndex = plan.images.findIndex((img: string) => img === selectedImage);
-      const prevIndex = (currentIndex - 1 + plan.images.length) % plan.images.length;
-      setSelectedImage(plan.images[prevIndex]);
+    const images = plan.images ?? [];
+    if (images.length > 1 && selectedImage) {
+      const currentIndex = images.findIndex((img) => img === selectedImage);
+      const prevIndex = (currentIndex - 1 + images.length) % images.length;
+      setSelectedImage(images[prevIndex]);
     }
   };
 
   const handleNext = () => {
-    if (plan.images && plan.images.length > 1 && selectedImage) {
-      const currentIndex = plan.images.findIndex((img: string) => img === selectedImage);
-      const nextIndex = (currentIndex + 1) % plan.images.length;
-      setSelectedImage(plan.images[nextIndex]);
+    const images = plan.images ?? [];
+    if (images.length > 1 && selectedImage) {
+      const currentIndex = images.findIndex((img) => img === selectedImage);
+      const nextIndex = (currentIndex + 1) % images.length;
+      setSelectedImage(images[nextIndex]);
     }
   };
 
@@ -101,7 +104,7 @@ export default function PlanDetailsPage() {
             />
 
             {/* Arrows */}
-            {plan.images?.length > 1 && (
+            {(plan.images?.length ?? 0) > 1 && (
               <>
                 <button onClick={handlePrev} className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow">
                   <ChevronRight className="rotate-180 w-5 h-5 text-gray-700" />
@@ -114,9 +117,9 @@ export default function PlanDetailsPage() {
           </div>
 
           {/* Thumbnails */}
-          {plan.images?.length > 1 && (
+          {(plan.images?.length ?? 0) > 1 && (
             <div className="flex gap-3 flex-wrap justify-center">
-              {plan.images.map((img: string, idx: number) => (
+              {plan.images?.map((img, idx) => (
                 <Image
                   key={idx}
                   src={img}
@@ -142,7 +145,7 @@ export default function PlanDetailsPage() {
                   height={800}
                   className="w-full max-h-[90vh] object-contain rounded-lg shadow-lg"
                 />
-                {plan.images?.length > 1 && (
+                {(plan.images?.length ?? 0) > 1 && (
                   <>
                     <button onClick={handlePrev} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2">
                       <ChevronRight className="rotate-180 w-5 h-5" />

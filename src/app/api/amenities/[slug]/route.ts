@@ -3,7 +3,10 @@ import clientPromise from '@/app/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request, { params }: { params: { slug: string } }) {
+export async function GET(
+  req: Request,
+  { params }: { params: { slug: string } }
+) {
   try {
     const client = await clientPromise;
     const db = client.db('alfa_business');
@@ -16,12 +19,15 @@ export async function GET(req: Request, { params }: { params: { slug: string } }
     }
 
     return NextResponse.json(amenity);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Error fetching amenity' }, { status: 500 });
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { slug: string } }) {
+export async function PUT(
+  req: Request,
+  { params }: { params: { slug: string } }
+) {
   try {
     const id = params.slug;
     const formData = await req.formData();
@@ -34,7 +40,7 @@ export async function PUT(req: Request, { params }: { params: { slug: string } }
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
-    let updatedFields: any = {
+    const updatedFields: Record<string, unknown> = {
       amenitiesName,
       tag,
       description,
@@ -43,15 +49,18 @@ export async function PUT(req: Request, { params }: { params: { slug: string } }
 
     if (imageFile && typeof imageFile === 'object') {
       const buffer = Buffer.from(await imageFile.arrayBuffer());
-      const uploadResult = await new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream({ folder: 'amenities' }, (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
-        }).end(buffer);
+
+      const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: 'amenities' },
+          (err, result) => {
+            if (err || !result) return reject(err);
+            resolve(result as { secure_url: string });
+          }
+        ).end(buffer);
       });
 
-      const imageUrl = (uploadResult as any).secure_url;
-      updatedFields.image = [imageUrl];
+      updatedFields.image = [uploadResult.secure_url];
     }
 
     const client = await clientPromise;
@@ -68,13 +77,16 @@ export async function PUT(req: Request, { params }: { params: { slug: string } }
     }
 
     return NextResponse.json({ message: 'Amenity updated successfully' }, { status: 200 });
-  } catch (error) {
-    console.error('PUT /api/amenities/[slug] error:', error);
+  } catch (err) {
+    console.error('PUT /api/amenities/[slug] error:', err);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { slug: string } }) {
+export async function DELETE(
+  req: Request,
+  { params }: { params: { slug: string } }
+) {
   try {
     const client = await clientPromise;
     const db = client.db('alfa_business');
@@ -106,8 +118,8 @@ export async function DELETE(req: Request, { params }: { params: { slug: string 
     await collection.deleteOne({ _id: new ObjectId(params.slug) });
 
     return NextResponse.json({ message: 'Amenity deleted successfully' }, { status: 200 });
-  } catch (error) {
-    console.error('DELETE /api/amenities/[slug] error:', error);
+  } catch (err) {
+    console.error('DELETE /api/amenities/[slug] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

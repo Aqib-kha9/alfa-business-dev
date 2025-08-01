@@ -1,19 +1,25 @@
 import { MongoClient } from 'mongodb';
 
 const uri = process.env.MONGODB_URI!;
-const options = {};
+const options: object = {};
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
+
+declare global {
+  // Ensure global type includes `_mongoClientPromise`
+  // Use `var` to avoid redeclaration error in global scope
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
+}
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please add your Mongo URI to .env.local");
 }
 
 if (process.env.NODE_ENV === 'development') {
-  if (!(global as any)._mongoClientPromise) {
+  if (!global._mongoClientPromise) {
     client = new MongoClient(uri, options);
-    (global as any)._mongoClientPromise = client.connect()
+    global._mongoClientPromise = client.connect()
       .then((connectedClient) => {
         console.log('[MongoDB] Connected successfully (dev)');
         return connectedClient;
@@ -23,7 +29,7 @@ if (process.env.NODE_ENV === 'development') {
         throw err;
       });
   }
-  clientPromise = (global as any)._mongoClientPromise;
+  clientPromise = global._mongoClientPromise;
 } else {
   client = new MongoClient(uri, options);
   clientPromise = client.connect()

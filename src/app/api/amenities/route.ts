@@ -21,7 +21,7 @@ export async function GET() {
     }));
 
     return NextResponse.json(formatted, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch amenities" }, { status: 500 });
   }
 }
@@ -40,14 +40,16 @@ export async function POST(req: Request) {
 
     const buffer = Buffer.from(await imageFile.arrayBuffer());
 
-    const uploadResult = await new Promise((resolve, reject) => {
+    const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
       cloudinary.uploader.upload_stream({ folder: 'amenities' }, (err, result) => {
-        if (err) reject(err);
-        else resolve(result);
+        if (err || !result?.secure_url) {
+          return reject(err || new Error('Upload failed'));
+        }
+        resolve({ secure_url: result.secure_url });
       }).end(buffer);
     });
 
-    const imageUrl = (uploadResult as any).secure_url;
+    const imageUrl = uploadResult.secure_url;
 
     const client = await clientPromise;
     const db = client.db('alfa_business');
@@ -68,8 +70,12 @@ export async function POST(req: Request) {
       { message: 'Amenity added', insertedId: insertResult.insertedId },
       { status: 201 }
     );
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('POST /api/amenities error:', err);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+
+    const errorMessage =
+      err instanceof Error ? err.message : 'Unknown error occurred';
+
+    return NextResponse.json({ error: 'Server error', details: errorMessage }, { status: 500 });
   }
 }

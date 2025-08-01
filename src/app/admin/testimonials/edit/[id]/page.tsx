@@ -86,8 +86,8 @@ export default function EditTestimonialPage() {
 
       toast.success('Testimonial updated');
       router.push('/admin/testimonials');
-    } catch (err: any) {
-      toast.error(err.message || 'Something went wrong');
+    } catch (err: unknown) {
+      toast.error((err as Error).message || 'Something went wrong');
     }
   };
 
@@ -189,7 +189,7 @@ function SimpleInput({
   value: string;
   type?: string;
   textarea?: boolean;
-  onChange: (e: React.ChangeEvent<any>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }) {
   return (
     <div>

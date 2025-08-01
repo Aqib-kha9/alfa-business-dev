@@ -110,7 +110,7 @@ const handleDelete = async (slug: string, title: string) => {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Pricing Plans Overview</h1>
         <p className="mt-1 text-gray-600 text-sm">
-          Manage your coworking space's pricing strategies. Add, update or delete plans easily.
+          Manage your coworking space&apos;s pricing strategies. Add, update or delete plans easily.
         </p>
       </div>
 

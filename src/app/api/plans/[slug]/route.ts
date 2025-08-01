@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/app/lib/mongodb";
 import { parseFormData } from "@/app/lib/parseForm";
-import {
-  uploadToCloudinary,
-  deleteFromCloudinary,
-} from "@/app/lib/util/cloudinary";
+import { uploadToCloudinary } from "@/app/lib/util/cloudinary";
 import slugifyLib from "slugify";
 import { deleteImageFromCloudinary } from "@/app/lib/cloudinaryUtils";
+
 type UploadedFile = {
   filepath: string;
-  originalFilename?: string;
+  originalFilename: string | null;
   mimetype?: string;
   size?: number;
 };
+
 // === GET ===
 export async function GET(
   req: NextRequest,
@@ -33,10 +32,11 @@ export async function GET(
     }
 
     return NextResponse.json(plan, { status: 200 });
-  } catch (err: any) {
-    console.error("❌ GET error:", err.message || err);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err.message : "Unknown error";
+    console.error("❌ GET error:", error);
     return NextResponse.json(
-      { error: "Fetch error", details: err.message || "Unknown error" },
+      { error: "Fetch error", details: error },
       { status: 500 }
     );
   }
@@ -67,7 +67,6 @@ export async function PUT(
       existingImages = "[]",
     } = fields;
 
-    // Parse and normalize `existingImages` (only keep ones that still exist)
     const parsedExistingImages: string[] = (() => {
       try {
         return JSON.parse(
@@ -75,26 +74,22 @@ export async function PUT(
             ? existingImages[0]
             : existingImages || "[]"
         );
-      } catch (err) {
+      } catch {
         console.warn("⚠️ Invalid existingImages JSON:", existingImages);
         return [];
       }
     })();
 
-    // Handle file uploads (if any)
-    const newFiles: UploadedFile[] = Array.isArray(files.images)
-      ? files.images
+    const newFiles = Array.isArray(files.images)
+      ? (files.images as UploadedFile[])
       : files.images
-      ? [files.images]
+      ? [files.images as UploadedFile]
       : [];
 
     const uploadedImages = await Promise.all(
-      newFiles.map((file: UploadedFile) =>
-        uploadToCloudinary(file.filepath, "plans")
-      )
+      newFiles.map((file) => uploadToCloudinary(file.filepath, "plans"))
     );
 
-    // Fetch current plan to get old image list
     const client = await clientPromise;
     const db = client.db("alfa_business");
     const collection = db.collection("plans");
@@ -107,24 +102,18 @@ export async function PUT(
 
     const oldImages: string[] = currentPlan.images || [];
 
-    // Determine which old images were removed by the user
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const removedImages = oldImages.filter(
       (url) => !parsedExistingImages.includes(url)
     );
 
     const finalImages = [...parsedExistingImages, ...uploadedImages];
 
-    // Optional: Delete removed images from Cloudinary
-    // await Promise.all(
-    //   removedImages.map((url) => deleteFromCloudinary(url))
-    // );
-
     const newSlug = slugifyLib(Array.isArray(title) ? title[0] : title || "", {
       lower: true,
       strict: true,
     });
 
-    // Prevent duplicate slugs
     if (newSlug !== slug) {
       const slugExists = await collection.findOne({ slug: newSlug });
       if (slugExists) {
@@ -138,7 +127,7 @@ export async function PUT(
       }
     }
 
-    const updateResult = await collection.updateOne(
+    await collection.updateOne(
       { slug },
       {
         $set: {
@@ -178,12 +167,13 @@ export async function PUT(
       { message: "Plan updated successfully" },
       { status: 200 }
     );
-  } catch (err: any) {
-    console.error("🔥 PUT error:", err.message || err);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err.message : "Unknown error";
+    console.error("🔥 PUT error:", error);
     return NextResponse.json(
       {
         error: "Internal Server Error",
-        details: err.message || "Unknown error",
+        details: error,
       },
       { status: 500 }
     );
@@ -219,10 +209,11 @@ export async function DELETE(
     }
 
     return NextResponse.json({ message: "Plan deleted" }, { status: 200 });
-  } catch (err: any) {
-    console.error("❌ DELETE error:", err.message || err);
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err.message : "Unknown error";
+    console.error("❌ DELETE error:", error);
     return NextResponse.json(
-      { error: "Delete failed", details: err.message || "Unknown error" },
+      { error: "Delete failed", details: error },
       { status: 500 }
     );
   }

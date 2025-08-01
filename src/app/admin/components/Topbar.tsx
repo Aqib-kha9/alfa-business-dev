@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Wallet, PlusCircle, Menu, LayoutDashboard, Phone, Image } from 'lucide-react';
+import { Home, Wallet, PlusCircle, Menu, LayoutDashboard, FileImage } from 'lucide-react';
 import { TiContacts, TiMessage } from 'react-icons/ti';
 
 export default function AdminNavbar({ toggleSidebar }: { toggleSidebar: () => void }) {
@@ -13,7 +13,7 @@ export default function AdminNavbar({ toggleSidebar }: { toggleSidebar: () => vo
     { href: '/admin/plans', label: 'Pricing Plans', icon: <Wallet size={18} /> },
     { href: '/admin/tour', label: 'Tour Requests', icon: <PlusCircle size={18} /> },
     { href: '/admin/amenities', label: 'Amenities', icon: <Home size={18} /> },
-    { href: '/admin/gallery', label: 'Gallery', icon: <Image size={18} /> },
+    { href: '/admin/gallery', label: 'Gallery', icon: <FileImage size={18} /> },
     { href: '/admin/testimonials', label: 'Testimonials', icon: <TiMessage size={18} /> },
     { href: '/admin/contact', label: 'Contact', icon: <TiContacts size={18} /> },
   ];

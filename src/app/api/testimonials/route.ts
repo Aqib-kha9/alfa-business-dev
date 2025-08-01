@@ -3,11 +3,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import cloudinary from '@/app/lib/cloudinary';
 import clientPromise from '@/app/lib/mongodb';
 import { ObjectId } from 'mongodb';
+
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+interface CloudinaryUploadResult {
+  secure_url: string;
+  [key: string]: unknown;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,7 +32,7 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await imageFile.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const uploadResult = await new Promise((resolve, reject) => {
+    const uploadResult: CloudinaryUploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
           folder: 'testimonials',
@@ -34,14 +40,13 @@ export async function POST(req: NextRequest) {
         },
         (error, result) => {
           if (error) reject(error);
-          else resolve(result);
+          else resolve(result as CloudinaryUploadResult);
         }
       ).end(buffer);
     });
 
-    const { secure_url } = uploadResult as any;
+    const { secure_url } = uploadResult;
 
-    // ✅ Insert into MongoDB
     const client = await clientPromise;
     const db = client.db();
 
@@ -51,8 +56,8 @@ export async function POST(req: NextRequest) {
       title,
       message,
       image: secure_url,
-      status: 'pending', // optional: default value
-      creditedAt: new Date(), // this is needed for sorting in GET
+      status: 'pending',
+      creditedAt: new Date(),
     };
 
     await db.collection('testimonials').insertOne(newTestimonial);
@@ -67,7 +72,8 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+// ✅ Removed unused `req`
+export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db();
@@ -104,4 +110,3 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to delete testimonial' }, { status: 500 });
   }
 }
-

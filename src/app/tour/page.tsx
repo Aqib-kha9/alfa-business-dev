@@ -1,7 +1,6 @@
 'use client';
 import { MapPin, Phone, Mail, MessageCircle } from 'lucide-react';
 import React, { useState } from 'react';
-import { z } from 'zod';
 import { bookTourSchema } from '@/app/lib/schemas/bookTourSchema';
 
 export default function VisitPage() {

@@ -1,10 +1,58 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, ChangeEvent, KeyboardEvent, FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { planSchema } from '@/app/lib/schemas/planSchema';
 import Swal from 'sweetalert2';
+import { planSchema } from '@/app/lib/schemas/planSchema';
+
+type FormState = {
+  title: string;
+  monthlyPrice: string;
+  yearlyPrice: string;
+  available: boolean;
+  description: string;
+  popular: boolean;
+  monthlyFeatureInput: string;
+  yearlyFeatureInput: string;
+};
+
+type SimpleInputProps = {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  error?: string;
+};
+
+type TextareaInputProps = {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  error?: string;
+};
+
+type SelectInputProps = {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+  error?: string;
+};
+
+type FeatureTagInputProps = {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+  tags: string[];
+  onRemove: (tag: string) => void;
+  onAdd: () => void;
+  error?: string;
+};
 
 export default function AddEditPlanPage() {
   const router = useRouter();
@@ -14,7 +62,7 @@ export default function AddEditPlanPage() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const dropRef = useRef<HTMLLabelElement | null>(null);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     title: '',
     monthlyPrice: '',
     yearlyPrice: '',
@@ -32,7 +80,6 @@ export default function AddEditPlanPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ Fetch plan for edit mode
   useEffect(() => {
     if (planId) {
       (async () => {
@@ -61,7 +108,7 @@ export default function AddEditPlanPage() {
     }
   }, [planId]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
       setForm(prev => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
@@ -84,7 +131,7 @@ export default function AddEditPlanPage() {
   };
 
   const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
+    e: KeyboardEvent<HTMLInputElement>,
     key: 'monthlyFeatureInput' | 'yearlyFeatureInput',
     setTags: React.Dispatch<React.SetStateAction<string[]>>,
     existingTags: string[],
@@ -112,15 +159,13 @@ export default function AddEditPlanPage() {
     handleImageChange(e.dataTransfer.files);
   };
 
-  const handleFileClick = () => {
-    inputRef.current?.click();
-  };
+  const handleFileClick = () => inputRef.current?.click();
 
   const removeImage = (index: number) => {
     setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -130,7 +175,7 @@ export default function AddEditPlanPage() {
       yearlyPrice: Number(form.yearlyPrice),
       monthlyFeatures: monthlyFeatureTags,
       yearlyFeatures: yearlyFeatureTags,
-      images: imageFiles.map(() => "https://placeholder.com/image.jpg"),
+      images: imageFiles.map(() => 'https://placeholder.com/image.jpg'),
     });
 
     if (!parsed.success) {
@@ -142,13 +187,11 @@ export default function AddEditPlanPage() {
         }
       });
       setErrors(fieldErrors);
-      console.log(fieldErrors);
       await Swal.fire({
         icon: 'warning',
         title: 'Validation Error',
         text: 'Please fix the highlighted fields before submitting.',
       });
-
       setIsSubmitting(false);
       return;
     }
@@ -187,8 +230,7 @@ export default function AddEditPlanPage() {
         title: 'Error saving plan',
         text: 'Please try again later.',
       });
-    }
-    finally {
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -395,7 +437,7 @@ function SimpleInput({ label, name, value, onChange, type = 'text', error }: any
         id={name}
         value={value}
         type={type}
-        onChange={onChange}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e)}
         placeholder={`Enter ${label.toLowerCase()}`}
         className={`w-full border px-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 ${error ? 'border-red-500 focus:ring-red-300' : 'border-gray-300 focus:ring-[#2d386a]'}`}
       />
@@ -415,7 +457,7 @@ function TextareaInput({ label, name, value, onChange, error }: any) {
         id={name}
         value={value}
         rows={3}
-        onChange={onChange}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e)}
         placeholder={`Enter ${label.toLowerCase()}`}
         className={`w-full border px-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 ${error ? 'border-red-500 focus:ring-red-300' : 'border-gray-300 focus:ring-[#2d386a]'}`}
       />
@@ -466,7 +508,7 @@ function FeatureTagInput({ label, value, onChange, onKeyDown, tags, onRemove, on
             name={name}
             placeholder="Type feature and press Enter"
             value={value}
-            onChange={onChange}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e)}
             onKeyDown={onKeyDown}
             className="flex-1 border border-gray-300 px-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#2d386a] transition"
           />

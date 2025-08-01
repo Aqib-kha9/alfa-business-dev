@@ -3,7 +3,7 @@ import clientPromise from '@/app/lib/mongodb';
 import { planSchema } from '@/app/lib/schemas/planSchema';
 import cloudinary from '@/app/lib/cloudinary';
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const client = await clientPromise;
     const db = client.db('alfa_business');
@@ -99,10 +99,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ _id: result.insertedId, ...parsed, slug }, { status: 201 });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[PLAN POST ERROR]', err);
     return NextResponse.json(
-      { error: 'Upload or DB error', details: err.message },
+      { error: 'Upload or DB error', details: (err as Error).message },
       { status: 500 }
     );
   }

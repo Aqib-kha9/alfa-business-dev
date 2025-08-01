@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import Swal from 'sweetalert2';
@@ -212,7 +213,7 @@ export default function EditAmenities() {
           {/* Show existing or new image preview */}
           {(formData.image.length > 0 || imageFile) && (
             <div className="relative w-32 h-32 border rounded-md shadow-sm overflow-hidden">
-              <img
+              <Image
                 src={
                   imageFile
                     ? URL.createObjectURL(imageFile)
@@ -269,7 +270,7 @@ function SimpleInput({
   label: string;
   name: string;
   value: string;
-  onChange: (e: React.ChangeEvent<any>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }) {
   return (
     <div>
@@ -284,7 +285,7 @@ function SimpleInput({
           onChange={onChange}
           required
           placeholder={`Enter ${label.toLowerCase()}`}
-          className="w-full border px-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 border-gray-300 focus:ring-[#2d386a]"
+          className="w-full border px-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 border-gray-300 focus:ring-[#2d386a] resize-none"
         />
       ) : (
         <input
@@ -301,3 +302,4 @@ function SimpleInput({
     </div>
   );
 }
+
