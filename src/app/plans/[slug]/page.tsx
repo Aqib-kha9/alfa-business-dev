@@ -86,7 +86,7 @@ export default function PlanDetailsPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <h1 className="text-4xl font-extrabold text-[#1e2952]">{plan.title}</h1>
           <span className={`px-4 py-1 text-sm font-medium rounded-full ${plan.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-            {plan.available ? '✅ Seats Available' : '❌ Fully Booked'}
+            {plan.available ? 'Seats Available' : 'Fully Booked'}
           </span>
         </div>
 
@@ -137,7 +137,7 @@ export default function PlanDetailsPage() {
           {isModalOpen && (
             <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onClick={() => setIsModalOpen(false)}>
               <div className="relative w-full max-w-6xl px-4" onClick={(e) => e.stopPropagation()}>
-                <button onClick={() => setIsModalOpen(false)} className="absolute top-2 right-2 text-white bg-black/60 hover:bg-black rounded-full p-1">✕</button>
+                <button onClick={() => setIsModalOpen(false)} className="absolute top-2 cursor-pointer right-2 text-white bg-black/60 hover:bg-black rounded-full p-1">✕</button>
                 <Image
                   src={selectedImage || plan.image}
                   alt={`Zoomed view of ${plan.title}`}
@@ -147,10 +147,10 @@ export default function PlanDetailsPage() {
                 />
                 {(plan.images?.length ?? 0) > 1 && (
                   <>
-                    <button onClick={handlePrev} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2">
+                    <button onClick={handlePrev} className="absolute cursor-pointer left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2">
                       <ChevronRight className="rotate-180 w-5 h-5" />
                     </button>
-                    <button onClick={handleNext} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2">
+                    <button onClick={handleNext} className="absolute cursor-pointer right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white rounded-full p-2">
                       <ChevronRight className="w-5 h-5" />
                     </button>
                   </>

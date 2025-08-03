@@ -1,4 +1,4 @@
-import { number, z } from 'zod';
+import { z } from 'zod';
 
 export const bookTourSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),

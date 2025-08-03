@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import clientPromise from '@/app/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import cloudinary from '@/app/lib/cloudinary';
@@ -7,47 +8,88 @@ type CloudinaryUploadResult = {
   secure_url: string;
 };
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+interface TestimonialUpdateData {
+  name?: string;
+  email?: string;
+  title?: string;
+  message?: string;
+  status?: string;
+  image?: string;
+}
+
+// Next.js 15 compatible route handler context
+interface RouteHandlerContext {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(
+  request: NextRequest,
+  context: RouteHandlerContext
+): Promise<NextResponse> {
   try {
-    const id = params.id;
+    const { id } = await context.params;
+    
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
     }
 
-    const formData = await req.formData();
+    const client = await clientPromise;
+    const db = client.db();
+    const testimonial = await db
+      .collection('testimonials')
+      .findOne({ _id: new ObjectId(id) });
 
-    const name = formData.get('name') as string;
-    const email = formData.get('email') as string;
-    const title = formData.get('title') as string;
-    const message = formData.get('message') as string;
-    const status = formData.get('status') as string;
-    const imageFile = formData.get('image') as File | null;
+    if (!testimonial) {
+      return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+    }
 
-    const updateData: Record<string, string> = {
-      name,
-      email,
-      title,
-      message,
-      status,
-    };
+    return NextResponse.json(testimonial);
+  } catch (err) {
+    console.error('[GET Error]', err);
+    return NextResponse.json(
+      { error: 'Internal Server Error' }, 
+      { status: 500 }
+    );
+  }
+}
 
-    if (imageFile && typeof imageFile === 'object') {
+export async function PUT(
+  request: NextRequest,
+  context: RouteHandlerContext
+): Promise<NextResponse> {
+  try {
+    const { id } = await context.params;
+    
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+    }
+
+    const formData = await request.formData();
+    const updateData: TestimonialUpdateData = {};
+
+    // Process form data with proper type checking
+    const stringFields: (keyof TestimonialUpdateData)[] = ['name', 'email', 'title', 'message', 'status'];
+    for (const field of stringFields) {
+      const value = formData.get(field);
+      if (value) {
+        updateData[field] = value.toString();
+      }
+    }
+
+    // Handle image upload
+    const imageFile = formData.get('image');
+    if (imageFile instanceof File) {
       const arrayBuffer = await imageFile.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      const uploaded: CloudinaryUploadResult = await new Promise((resolve, reject) => {
+      const uploaded = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
         cloudinary.uploader.upload_stream(
-          {
-            folder: 'testimonials',
-            resource_type: 'image',
-          },
-          (error, result) => {
-            if (error || !result) return reject(error);
-            resolve(result as CloudinaryUploadResult);
-          }
+          { folder: 'testimonials' },
+          (error, result) => error || !result ? reject(error) : resolve(result)
         ).end(buffer);
       });
 
@@ -65,31 +107,42 @@ export async function PUT(
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: 'Testimonial updated successfully' });
+    return NextResponse.json({ success: true });
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('[PUT Error]', err);
+    return NextResponse.json(
+      { error: 'Internal Server Error' }, 
+      { status: 500 }
+    );
   }
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(
+  request: NextRequest,
+  context: RouteHandlerContext
+): Promise<NextResponse> {
   try {
+    const { id } = await context.params;
+    
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+    }
+
     const client = await clientPromise;
     const db = client.db();
-    const testimonial = await db
-      .collection('testimonials')
-      .findOne({ _id: new ObjectId(params.id) });
+    const result = await db.collection('testimonials')
+      .deleteOne({ _id: new ObjectId(id) });
 
-    if (!testimonial) {
+    if (result.deletedCount === 0) {
       return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ testimonial });
+    return NextResponse.json({ success: true });
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('[DELETE Error]', err);
+    return NextResponse.json(
+      { error: 'Internal Server Error' }, 
+      { status: 500 }
+    );
   }
 }

@@ -3,7 +3,7 @@ import clientPromise from '@/app/lib/mongodb';
 import { planSchema } from '@/app/lib/schemas/planSchema';
 import cloudinary from '@/app/lib/cloudinary';
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db('alfa_business');

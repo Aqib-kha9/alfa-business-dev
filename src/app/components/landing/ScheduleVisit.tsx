@@ -1,6 +1,7 @@
 "use client";
+import { CalendarIcon, Mail, MapPin } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
 
-import { CalendarIcon, Mail, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 
 export default function ScheduleVisit() {
@@ -18,10 +19,16 @@ export default function ScheduleVisit() {
           </p>
 
           <div className="space-y-1 text-sm">
-            <div className="flex items-center gap-2 text-gray-700">
-              <Phone className="text-[#2d386a]" size={18} />
-              <span>+91 123 456 7890</span>
-            </div>
+            <a
+              href="https://wa.me/919820190836"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-gray-700 hover:text-[#2d386a] transition"
+            >
+              <SiWhatsapp className="text-[#2d386a]" size={18} />
+              <span>+91 98201 90836</span>
+            </a>
+
             <div className="flex items-center gap-2 text-gray-700">
               <Mail className="text-[#2d386a]" size={18} />
               <span>info@alfabusiness.com</span>

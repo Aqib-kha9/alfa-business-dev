@@ -38,6 +38,7 @@ export default function Footer() {
         setMessage(data?.error || "Something went wrong.");
       }
     } catch (err) {
+      console.log(err)
       setMessage("Server error. Please try again.");
     }
   };
@@ -77,10 +78,10 @@ export default function Footer() {
               <ul className="space-y-2">
                 <li><Link href="/">Home</Link></li>
                 <li><Link href="/about">About Us</Link></li>
-                <li><Link href="/pricing">Pricing</Link></li>
+                <li><Link href="/plans">Pricing</Link></li>
                 <li><Link href="/amenities">Our Amenities</Link></li>
                 <li><Link href="/gallery">Gallery</Link></li>
-                <li><Link href="/pay-online">Pay Online</Link></li>
+                <li><Link href="/payment">Pay Online</Link></li>
                 <li><Link href="/contact">Contact Us</Link></li>
                 <li><Link href="/admin/login" target="_blank" rel="noopener noreferrer">
                   Admin

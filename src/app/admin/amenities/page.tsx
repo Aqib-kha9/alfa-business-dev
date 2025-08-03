@@ -39,49 +39,49 @@ export default function AmenitiesPage() {
   }, []);
 
 
-const handleDelete = async (slug: string) => {
-  const result = await Swal.fire({
-    title: 'Are you sure?',
-    text: 'This will permanently delete the amenity.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!',
-  });
+  const handleDelete = async (slug: string) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will permanently delete the amenity.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    });
 
-  if (!result.isConfirmed) return;
+    if (!result.isConfirmed) return;
 
-  try {
-    const res = await fetch(`/api/amenities/${slug}`, { method: 'DELETE' });
+    try {
+      const res = await fetch(`/api/amenities/${slug}`, { method: 'DELETE' });
 
-    if (res.ok) {
-      await Swal.fire({
-        icon: 'success',
-        title: 'Deleted!',
-        text: 'Amenity has been deleted successfully.',
-        confirmButtonColor: '#2d386a',
-      });
-      await fetchAmenities(); // Refresh UI
-    } else {
-      const err = await res.json();
+      if (res.ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Amenity has been deleted successfully.',
+          confirmButtonColor: '#2d386a',
+        });
+        await fetchAmenities(); // Refresh UI
+      } else {
+        const err = await res.json();
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to delete',
+          text: err.error || 'Something went wrong.',
+          confirmButtonColor: '#d33',
+        });
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
       Swal.fire({
         icon: 'error',
-        title: 'Failed to delete',
-        text: err.error || 'Something went wrong.',
+        title: 'Error',
+        text: 'Something went wrong. Please try again later.',
         confirmButtonColor: '#d33',
       });
     }
-  } catch (err) {
-    console.error('Delete error:', err);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Something went wrong. Please try again later.',
-      confirmButtonColor: '#d33',
-    });
-  }
-};
+  };
 
 
   const handleEdit = (slug: string) => {
@@ -106,10 +106,15 @@ const handleDelete = async (slug: string) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {amenities.map((amenity) => (
             <div key={amenity._id} className="bg-white rounded shadow hover:shadow-md transition">
-              <Image
-                src={Array.isArray(amenity.image) && amenity.image[0] ? amenity.image[0] : '/placeholder.jpg'}
-                alt={amenity.amenitiesName}
-              />
+              <div className="relative w-full h-48">
+                <Image
+                  src={Array.isArray(amenity.image) && amenity.image[0] ? amenity.image[0] : '/placeholder.jpg'}
+                  alt={amenity.amenitiesName}
+                  fill
+                  className="object-cover rounded-t"
+                />
+              </div>
+
               <div className="p-4">
                 <h4 className="text-lg font-semibold">{amenity.amenitiesName}</h4>
                 <p className="text-sm text-gray-500 mb-1">{amenity.tag}</p>

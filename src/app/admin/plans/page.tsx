@@ -52,6 +52,7 @@ export default function ProductPage() {
       const data = await res.json();
       setPlans(data);
     } catch (err) {
+      console.log(err)
       toast.error("Failed to fetch plans");
     } finally {
       setLoading(false);
@@ -87,6 +88,7 @@ const handleDelete = async (slug: string, title: string) => {
       Swal.fire('Error', data.error || 'Delete failed', 'error');
     }
   } catch (err) {
+    console.log(err)
     Swal.fire('Error', 'Delete request failed', 'error');
   } finally {
     setDeletingId(null);

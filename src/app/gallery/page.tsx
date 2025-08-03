@@ -75,7 +75,7 @@ export default function Gallery() {
             <button
               key={cat}
               onClick={() => setSelected(cat)}
-              className={`px-5 py-2 rounded-full border text-sm font-medium transition ${
+              className={`px-5 py-2 rounded-full border cursor-pointer text-sm font-medium transition ${
                 selected === cat
                   ? "bg-[#2d386a] text-white"
                   : "bg-white border-gray-300 text-gray-700 hover:bg-gray-100"
@@ -117,7 +117,7 @@ export default function Gallery() {
         <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4">
           <button
             onClick={() => setShowModal(false)}
-            className="absolute top-4 right-4 text-white hover:text-gray-300"
+            className="absolute top-4 cursor-pointer right-4 text-white hover:text-gray-300"
           >
             <X size={28} />
           </button>
@@ -125,7 +125,7 @@ export default function Gallery() {
           <div className="flex items-center justify-between w-full max-w-5xl relative">
             <button
               onClick={handlePrev}
-              className="p-2 text-white hover:text-gray-300"
+              className="p-2 text-white cursor-pointer hover:text-gray-300"
             >
               <ChevronLeft size={32} />
             </button>
@@ -145,7 +145,7 @@ export default function Gallery() {
 
             <button
               onClick={handleNext}
-              className="p-2 text-white hover:text-gray-300"
+              className="p-2 text-white cursor-pointer hover:text-gray-300"
             >
               <ChevronRight size={32} />
             </button>

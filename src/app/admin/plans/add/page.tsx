@@ -428,7 +428,7 @@ export default function AddEditPlanPage() {
 }
 
 // Components remain the same:
-function SimpleInput({ label, name, value, onChange, type = 'text', error }: any) {
+function SimpleInput({ label, name, value, onChange, type = 'text', error }: SimpleInputProps) {
   return (
     <div>
       <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
@@ -447,8 +447,8 @@ function SimpleInput({ label, name, value, onChange, type = 'text', error }: any
 }
 
 
+function TextareaInput({ label, name, value, onChange, error }: TextareaInputProps) {
 
-function TextareaInput({ label, name, value, onChange, error }: any) {
   return (
     <div>
       <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
@@ -467,7 +467,8 @@ function TextareaInput({ label, name, value, onChange, error }: any) {
 }
 
 
-function SelectInput({ label, name, value, onChange, error }: any) {
+function SelectInput({ label, name, value, onChange, error }: SelectInputProps) {
+
   return (
     <div>
       <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
@@ -490,7 +491,17 @@ function SelectInput({ label, name, value, onChange, error }: any) {
 }
 
 
-function FeatureTagInput({ label, value, onChange, onKeyDown, tags, onRemove, onAdd, name, error }: any) {
+function FeatureTagInput({
+  label,
+  name,
+  value,
+  onChange,
+  onKeyDown,
+  tags,
+  onRemove,
+  onAdd,
+  error,
+}: FeatureTagInputProps) {
   return (
     <div className="mt-6">
       <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>

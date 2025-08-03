@@ -37,6 +37,7 @@ export default function AdminLoginPage() {
         setErrorMsg(data.message || 'Invalid credentials');
       }
     } catch (err) {
+      console.log(err)
       setErrorMsg('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
@@ -74,7 +75,7 @@ export default function AdminLoginPage() {
         <button
           onClick={handleLogin}
           disabled={loading}
-          className={`w-full py-3 rounded font-medium text-white transition ${
+          className={`w-full py-3 cursor-pointer rounded font-medium text-white transition ${
             loading
               ? 'bg-[#2d386a]/60 cursor-not-allowed'
               : 'bg-[#2d386a] hover:bg-[#1f274f]'

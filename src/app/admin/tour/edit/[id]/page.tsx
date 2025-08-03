@@ -3,7 +3,6 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { number } from 'zod';
 
 export default function EditTour() {
   const router = useRouter();
@@ -55,7 +54,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     const text = await res.text();
     const result = text ? JSON.parse(text) : {};
-
+    console.log(result);
     // ✅ Show success alert
     await Swal.fire({
       icon: 'success',

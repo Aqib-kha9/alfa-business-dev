@@ -2,46 +2,55 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Wallet, PlusCircle, Menu, LayoutDashboard, FileImage } from 'lucide-react';
-import { TiContacts, TiMessage } from 'react-icons/ti';
+import {
+  Menu,
+  Bell,
+  Search,
+} from 'lucide-react';
+import Image from 'next/image';
 
 export default function AdminNavbar({ toggleSidebar }: { toggleSidebar: () => void }) {
   const pathname = usePathname();
 
-  const navItems = [
-    { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-    { href: '/admin/plans', label: 'Pricing Plans', icon: <Wallet size={18} /> },
-    { href: '/admin/tour', label: 'Tour Requests', icon: <PlusCircle size={18} /> },
-    { href: '/admin/amenities', label: 'Amenities', icon: <Home size={18} /> },
-    { href: '/admin/gallery', label: 'Gallery', icon: <FileImage size={18} /> },
-    { href: '/admin/testimonials', label: 'Testimonials', icon: <TiMessage size={18} /> },
-    { href: '/admin/contact', label: 'Contact', icon: <TiContacts size={18} /> },
-  ];
-
   return (
-    <header className="h-16 px-4 flex items-center justify-between bg-white shadow-sm w-full">
-      {/* Left Side: Menu + Links */}
-      <div className="flex items-center space-x-4 overflow-x-auto scrollbar-hide">
-        <button onClick={toggleSidebar} className="text-gray-700 hover:text-[#2d386a] p-2 shrink-0">
-          <Menu size={24} />
+    <header className="h-16 w-full px-4 sm:px-6 flex items-center justify-between bg-white shadow-sm">
+      {/* Left section: toggle + branding */}
+      <div className="flex items-center space-x-3">
+        <button
+          onClick={toggleSidebar}
+          className="text-gray-600 hover:text-[#2d386a] transition p-2"
+        >
+          <Menu size={22} />
+        </button>
+        <span className="text-lg font-semibold text-[#2d386a] hidden sm:block">
+          Admin Dashboard
+        </span>
+      </div>
+
+      {/* Right section: actions */}
+      <div className="flex items-center space-x-4">
+        {/* Search (optional) */}
+        {/* <button className="hidden sm:flex items-center gap-2 text-sm text-gray-600 hover:text-[#2d386a] transition">
+          <Search size={18} />
+          <span className="hidden md:inline">Search</span>
         </button>
 
-        {/* Responsive horizontal scrollable nav */}
-        <nav className="flex gap-2 md:gap-4 overflow-x-auto whitespace-nowrap scrollbar-hide">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-1 px-3 py-1 rounded-md text-sm font-medium shrink-0
-                ${pathname.startsWith(item.href)
-                  ? 'text-[#2d386a] border-b-2 border-[#2d386a]'
-                  : 'text-gray-500 hover:text-[#2d386a]'}`}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
+        {/* Notifications */}
+        {/* <button className="relative p-2 text-gray-600 hover:text-[#2d386a] transition">
+          <Bell size={20} />
+          <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+        </button> */} 
+
+        {/* Avatar */}
+        <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
+          <Image
+            src="/woman1.avif" // replace with actual avatar or placeholder
+            alt="Admin"
+            width={100}
+            height={100}
+            className="object-cover"
+          />
+        </div>
       </div>
     </header>
   );

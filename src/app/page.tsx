@@ -11,58 +11,6 @@ import TestimonialsSection from "@/app/components/landing/TestimonialsSection";
 import PricingSection from "@/app/components/landing/PricingSection";
 import LimitedOfferBanner from "./components/landing/LTOBanner";
 
-const homeFeatures = [
-  {
-    image: '/wifi.jpeg',
-    title: 'High-Speed WiFi',
-    desc: 'Blazing-fast internet for seamless work.',
-  },
-  {
-    image: '/snack.jpg',
-    title: 'Complimentary Snacks',
-    desc: 'Free coffee, tea & snacks daily.',
-  },
-  {
-    image: '/conference.jpg',
-    title: 'Modern Conference Rooms',
-    desc: 'Bookable rooms with all essentials.',
-  },
-  {
-    image: '/Biometric.webp',
-    title: 'Biometric Access',
-    desc: 'Secure entry with biometrics.',
-  },
-  {
-    image: '/Ample.jpg',
-    title: 'Ample Parking',
-    desc: 'Easy parking for you and guests.',
-  },
-  {
-    image: '/Prime.jpeg',
-    title: 'Prime Location',
-    desc: 'In the heart of Mumbai.',
-  },
-    {
-    image: '/Ample.jpg',
-    title: 'Ample Parking',
-    desc: 'Easy parking for you and guests.',
-  },
-  {
-    image: '/Prime.jpeg',
-    title: 'Prime Location',
-    desc: 'In the heart of Mumbai.',
-  },
-    {
-    image: '/Ample.jpg',
-    title: 'Ample Parking',
-    desc: 'Easy parking for you and guests.',
-  },
-  {
-    image: '/Prime.jpeg',
-    title: 'Prime Location',
-    desc: 'In the heart of Mumbai.',
-  },
-];
 
 export default function HomePage() {
   return (

@@ -13,9 +13,7 @@ type AddEditPlanFormProps = {
 };
 // Reusable form component for Add & Edit plan
 export default function AddEditPlanForm({
-  mode,
   initialData,
-  onSuccess,
 }: AddEditPlanFormProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -411,8 +409,19 @@ images: [...existingImages, ...imageFiles.map(() => 'https://dummy.image')],  })
     </div>
   )
 };
+
+import React, { ChangeEvent, KeyboardEvent } from 'react';
+
+interface SimpleInputProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  error?: string;
+}
 // Components remain the same:
-function SimpleInput({ label, name, value, onChange, type = 'text', error }: any) {
+function SimpleInput({ label, name, value, onChange, type = 'text', error }: SimpleInputProps) {
   return (
     <div>
       <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
@@ -432,7 +441,15 @@ function SimpleInput({ label, name, value, onChange, type = 'text', error }: any
 
 
 
-function TextareaInput({ label, name, value, onChange, error }: any) {
+interface TextareaInputProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  error?: string;
+}
+
+function TextareaInput({ label, name, value, onChange, error }: TextareaInputProps) {
   return (
     <div>
       <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
@@ -451,19 +468,25 @@ function TextareaInput({ label, name, value, onChange, error }: any) {
 }
 
 
-function SelectInput({ label, name, value, onChange, error }: any) {
+
+interface SelectInputProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+  error?: string;
+}
+
+function SelectInput({ label, name, value, onChange, error }: SelectInputProps) {
   return (
     <div>
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
+      <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       <select
         name={name}
         id={name}
         value={value}
         onChange={onChange}
-        className={`w-full px-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 border ${error ? 'border-red-500 focus:ring-red-300' : 'border-gray-300 focus:ring-[#2d386a]'
-          }`}
+        className={`w-full px-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 border ${error ? 'border-red-500 focus:ring-red-300' : 'border-gray-300 focus:ring-[#2d386a]'}`}
       >
         <option value="no">No</option>
         <option value="yes">Yes</option>
@@ -474,13 +497,27 @@ function SelectInput({ label, name, value, onChange, error }: any) {
 }
 
 
-function FeatureTagInput({ label, value, onChange, onKeyDown, tags, onRemove, onAdd, name, error }: any) {
+interface FeatureTagInputProps {
+  label: string;
+  value: string;
+  name: string;
+  error?: string;
+  tags: string[];
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+  onAdd: () => void;
+  onRemove: (tag: string) => void;
+}
+
+function FeatureTagInput({
+  label, value, onChange, onKeyDown, tags, onRemove, onAdd, name, error,
+}: FeatureTagInputProps) {
   return (
     <div className="mt-6">
       <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
       <div className={`rounded-lg border bg-white p-4 shadow-sm ${error ? 'border-red-500' : 'border-gray-300'}`}>
         <div className="flex flex-wrap gap-2 mb-3 min-h-[40px]">
-          {tags.length > 0 ? tags.map((tag: string) => (
+          {tags.length > 0 ? tags.map((tag) => (
             <span key={tag} className="bg-[#2d386a]/10 text-[#2d386a] text-sm px-3 py-1 rounded-full flex items-center gap-2">
               {tag}
               <button type="button" onClick={() => onRemove(tag)} className="text-xs text-red-500 hover:text-red-700 font-bold">×</button>
@@ -509,4 +546,3 @@ function FeatureTagInput({ label, value, onChange, onKeyDown, tags, onRemove, on
     </div>
   );
 }
-

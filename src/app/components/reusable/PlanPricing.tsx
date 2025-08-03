@@ -1,5 +1,6 @@
-// src/app/components/reusable/PlanPricing.tsx
+'use client';
 import { CheckCircle } from 'lucide-react';
+import Link from 'next/link';
 import { Plan } from '@/app/types/plan';
 
 function formatINR(value: number) {
@@ -11,7 +12,6 @@ function formatINR(value: number) {
 }
 
 export default function PlanPricing({ plan }: { plan: Plan }) {
-  console.log(plan)
   return (
     <div className="grid md:grid-cols-2 gap-8 mt-10">
       {/* Monthly Plan */}
@@ -31,9 +31,11 @@ export default function PlanPricing({ plan }: { plan: Plan }) {
           ))}
         </ul>
 
-        <button className="mt-6 cursor-pointer w-full bg-[#1e2952] text-white py-2.5 rounded-lg font-semibold hover:bg-[#0e1535] transition">
-          Reserve Now
-        </button>
+        <Link href="/payment">
+          <button className="mt-6 cursor-pointer w-full bg-[#1e2952] text-white py-2.5 rounded-lg font-semibold hover:bg-[#0e1535] transition">
+            Reserve Now
+          </button>
+        </Link>
       </div>
 
       {/* Yearly Plan */}
@@ -53,9 +55,11 @@ export default function PlanPricing({ plan }: { plan: Plan }) {
           ))}
         </ul>
 
-        <button className="mt-6 w-full cursor-pointer border-2 border-[#1e2952] text-[#1e2952] py-2.5 rounded-lg font-semibold hover:bg-[#1e2952] hover:text-white transition">
-          Book a Tour
-        </button>
+        <Link href="/tour">
+          <button className="mt-6 w-full cursor-pointer border-2 border-[#1e2952] text-[#1e2952] py-2.5 rounded-lg font-semibold hover:bg-[#1e2952] hover:text-white transition">
+            Book a Tour
+          </button>
+        </Link>
       </div>
     </div>
   );

@@ -1,4 +1,9 @@
+'use client';
+import { useRouter } from 'next/navigation';
+
 export default function BookTourCTA() {
+  const router = useRouter();
+
   return (
     <section className="bg-gray-100 py-16 pt-20">
       <div className="max-w-4xl mx-auto text-center px-4">
@@ -9,7 +14,10 @@ export default function BookTourCTA() {
           Join our thriving community and take your productivity to the next level.
           Book a tour today to see our facilities firsthand and discuss your coworking needs.
         </p>
-        <button className="bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition">
+        <button
+          onClick={() => router.push('/tour')}
+          className="bg-black cursor-pointer text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition"
+        >
           Book a Tour Now
         </button>
       </div>

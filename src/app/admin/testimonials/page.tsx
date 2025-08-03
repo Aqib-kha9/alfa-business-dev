@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaCheck, FaEdit, FaTimes } from 'react-icons/fa';
+import { FaEdit, FaTimes } from 'react-icons/fa';
 import { HiOutlinePlus } from 'react-icons/hi';
-import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 
 const statusColors: Record<'approved' | 'pending' | 'rejected', string> = {

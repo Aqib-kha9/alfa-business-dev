@@ -2,7 +2,6 @@
 import clientPromise from '@/app/lib/mongodb';
 import { contactSchema } from '@/app/lib/schemas/contactSchema';
 import { NextRequest, NextResponse } from 'next/server';
-import { ObjectId } from 'mongodb';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

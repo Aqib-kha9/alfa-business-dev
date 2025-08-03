@@ -33,7 +33,7 @@ export default function VisitPage() {
         };
 
         const flatErrors = validation?.error?.flatten().fieldErrors as FieldErrorMap;
-
+        console.log(flatErrors)
 
         try {
             const res = await fetch('/api/book-tour', {
@@ -60,6 +60,7 @@ export default function VisitPage() {
                 message: '',
             });
         } catch (error) {
+            console.log(error)
             setErrors({ form: 'Failed to submit. Please try again later.' });
         }
 
@@ -76,6 +77,7 @@ export default function VisitPage() {
                             Alfa Business Center
                         </span>
                     </span>
+                    
                 </h1>
 
                 <div className="grid md:grid-cols-2 gap-4">
@@ -188,7 +190,7 @@ export default function VisitPage() {
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.651298505902!2d72.8693834751927!3d19.079030952256443!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c630519841ff%3A0x9f3f70cc73e7c4f!2sBandra%20Kurla%20Complex%2C%20Mumbai%2C%20Maharashtra%20400051!5e0!3m2!1sen!2sin!4v1721487992000!5m2!1sen!2sin"
                                 width="100%"
-                                height="250"
+                                height="300"
                                 allowFullScreen
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"

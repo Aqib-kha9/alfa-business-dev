@@ -46,7 +46,7 @@ export default function Amenities() {
           <p className="text-center text-gray-500">Loading amenities...</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {amenities.map((item, index) => (
+            {amenities.map((item) => (
               <FeatureCard
                 key={item._id}
                 image={item.image?.[0] || '/placeholder.jpg'}
