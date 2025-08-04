@@ -67,9 +67,9 @@ export default function PlanDetailsPage() {
         <meta property="og:description" content={plan.description?.slice(0, 150) || ''} />
         <meta property="og:image" content={selectedImage || plan.image} />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content={`https://yourdomain.com/plans/${slug}`} />
+        <meta property="og:url" content={`https://www.weworkoffice.in/plans/${slug}`} />
         <meta name="twitter:card" content="summary_large_image" />
-        <link rel="canonical" href={`https://yourdomain.com/plans/${slug}`} />
+        <link rel="canonical" href={`https://www.weworkoffice.in/plans/${slug}`} />
       </Head>
 
       <div className="max-w-6xl mx-auto px-4 py-10 space-y-10">

@@ -9,12 +9,12 @@ export const metadata = {
   },
   description: 'Premium coworking and business spaces in Mumbai with modern amenities.',
   keywords: ['coworking', 'business center', 'office space', 'Mumbai', 'Alfa'],
-  authors: [{ name: 'Alfa Business Center', url: 'https://yourdomain.com' }],
-  metadataBase: new URL('https://yourdomain.com'),
+  authors: [{ name: 'Alfa Business Center', url: 'https://www.weworkoffice.in/' }],
+  metadataBase: new URL('https://www.weworkoffice.in/'),
   openGraph: {
     title: 'Alfa Business Center',
     description: 'Explore modern and flexible coworking spaces in Mumbai.',
-    url: 'https://yourdomain.com',
+    url: 'https://www.weworkoffice.in/',
     siteName: 'Alfa Business Center',
     images: [
       {
@@ -39,7 +39,7 @@ export const metadata = {
     nocache: false,
   },
   alternates: {
-    canonical: 'https://yourdomain.com',
+    canonical: 'https://www.weworkoffice.in/',
   },
 }
 
