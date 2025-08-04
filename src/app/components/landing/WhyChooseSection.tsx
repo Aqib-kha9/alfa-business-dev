@@ -65,20 +65,33 @@ export default function WhyChooseSection({
           <p className="text-gray-600 mb-10 max-w-2xl mx-auto">{subheading}</p>
         )}
 
-        {loading ? (
-          <p className="text-gray-500">Loading amenities...</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {visibleFeatures.map((feature, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading ? (
+            Array.from({ length: maxVisible || 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="animate-pulse bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+              >
+                <div className="bg-gray-300 w-full h-40" />
+                <div className="p-4">
+                  <div className="bg-gray-300 h-5 w-3/4 mb-2 rounded" />
+                  <div className="bg-gray-200 h-4 w-full mb-1 rounded" />
+                  <div className="bg-gray-200 h-4 w-5/6 rounded" />
+                </div>
+              </div>
+            ))
+          ) : (
+            visibleFeatures.map((feature, index) => (
               <FeatureCard
                 key={index}
                 image={feature.image}
                 title={feature.title}
                 desc={feature.desc}
               />
-            ))}
-          </div>
-        )}
+            ))
+          )}
+
+        </div>
       </div>
     </section>
   );

@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import TestimonialCard from '../reusable/TestimonialCard';
+import TestimonialSkeleton from '../skeleton/TestimonialSkeleton';
+
 
 type Testimonial = {
   message: string;
@@ -62,29 +64,29 @@ export default function TestimonialsSection() {
     ]
     : [];
 
- useEffect(() => {
-  const container = scrollRef.current;
-  if (!container) return;
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
 
-  const onScrollEnd = () => {
-    if (currentIndex === 0) {
-      setTimeout(() => {
-        setCurrentIndex(testimonialsData.length);
-        scrollToIndex(testimonialsData.length, false);
-      }, 50);
-    }
+    const onScrollEnd = () => {
+      if (currentIndex === 0) {
+        setTimeout(() => {
+          setCurrentIndex(testimonialsData.length);
+          scrollToIndex(testimonialsData.length, false);
+        }, 50);
+      }
 
-    if (currentIndex === testimonialsData.length + 1) {
-      setTimeout(() => {
-        setCurrentIndex(1);
-        scrollToIndex(1, false);
-      }, 50);
-    }
-  };
+      if (currentIndex === testimonialsData.length + 1) {
+        setTimeout(() => {
+          setCurrentIndex(1);
+          scrollToIndex(1, false);
+        }, 50);
+      }
+    };
 
-  const timeout = setTimeout(onScrollEnd, 500); 
-  return () => clearTimeout(timeout);
-}, [currentIndex, testimonialsData]);
+    const timeout = setTimeout(onScrollEnd, 500);
+    return () => clearTimeout(timeout);
+  }, [currentIndex, testimonialsData]);
 
 
 
@@ -107,34 +109,41 @@ export default function TestimonialsSection() {
         </h2>
 
         <div className="relative">
-          <div
-            ref={scrollRef}
-            className="flex overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory justify-start sm:justify-center gap-3 px-2"
-          >
-            {extended.map((item, index) => (
-              <div key={index} className="snap-center">
-                <TestimonialCard {...item} />
-              </div>
-            ))}
-          </div>
-
-          {/* Optional: Navigation Arrows */}
           
-          <button
-            onClick={() => handleScroll('prev')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow p-2 rounded-full border z-20"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={() => handleScroll('next')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow p-2 rounded-full border z-20"
-          >
-            <ChevronRight size={20} />
-          </button>
-         
+            <div
+              ref={scrollRef}
+              className="flex overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory justify-start sm:justify-center gap-3 px-2"
+            >
+              {testimonialsData.length === 0
+                ? Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="snap-center">
+                    <TestimonialSkeleton />
+                  </div>
+                ))
+                : extended.map((item, index) => (
+                  <div key={index} className="snap-center">
+                    <TestimonialCard {...item} />
+                  </div>
+                ))}
+            </div>
+
+            {/* Optional: Navigation Arrows */}
+
+            <button
+              onClick={() => handleScroll('prev')}
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow p-2 rounded-full border z-20"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={() => handleScroll('next')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow p-2 rounded-full border z-20"
+            >
+              <ChevronRight size={20} />
+            </button>
+
+          </div>
         </div>
-      </div>
     </section>
   );
 }

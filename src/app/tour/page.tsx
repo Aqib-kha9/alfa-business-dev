@@ -2,6 +2,7 @@
 import { MapPin, Phone, Mail, MessageCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import { bookTourSchema } from '@/app/lib/schemas/bookTourSchema';
+import ReCaptchaV3 from '@/app/components/reusable/ReCaptchaV3';
 
 export default function VisitPage() {
     const [form, setForm] = useState({
@@ -16,9 +17,14 @@ export default function VisitPage() {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
+    const [recaptchaToken, setRecaptchaToken] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleRecaptchaVerify = (token: string) => {
+        setRecaptchaToken(token);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -27,15 +33,35 @@ export default function VisitPage() {
         setSuccessMsg('');
         setLoading(true);
 
+        // Validate form
         const validation = bookTourSchema.safeParse(form);
-        type FieldErrorMap = {
-            [K in 'name' | 'email' | 'date' | 'time' | 'message']?: string[];
-        };
+        if (!validation.success) {
+            const fieldErrors = validation.error.flatten().fieldErrors;
+            setErrors(
+                Object.entries(fieldErrors).reduce((acc, [key, value]) => {
+                    acc[key] = value?.[0] || '';
+                    return acc;
+                }, {} as Record<string, string>)
+            );
+            setLoading(false);
+            return;
+        }
 
-        const flatErrors = validation?.error?.flatten().fieldErrors as FieldErrorMap;
-        console.log(flatErrors)
-
+        // Verify reCAPTCHA first
         try {
+            const captchaResponse = await fetch('/api/verify-captcha', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: recaptchaToken }),
+            });
+
+            const captchaData = await captchaResponse.json();
+
+            if (!captchaData.success) {
+                throw new Error('CAPTCHA verification failed. Please try again.');
+            }
+
+            // Submit form data
             const res = await fetch('/api/book-tour', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -45,9 +71,7 @@ export default function VisitPage() {
             const data = await res.json();
 
             if (!res.ok) {
-                if (data.error) setErrors({ form: 'Something went wrong. Please try again.' });
-                setLoading(false);
-                return;
+                throw new Error(data.error || 'Something went wrong. Please try again.');
             }
 
             setSuccessMsg('Tour booking submitted successfully!');
@@ -59,12 +83,15 @@ export default function VisitPage() {
                 preferredTime: '',
                 message: '',
             });
+            setRecaptchaToken('');
         } catch (error) {
-            console.log(error)
-            setErrors({ form: 'Failed to submit. Please try again later.' });
+            console.error(error);
+            setErrors({ 
+                form: error instanceof Error ? error.message : 'Failed to submit. Please try again later.' 
+            });
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     return (
@@ -77,7 +104,6 @@ export default function VisitPage() {
                             Alfa Business Center
                         </span>
                     </span>
-                    
                 </h1>
 
                 <div className="grid md:grid-cols-2 gap-4">
@@ -88,7 +114,7 @@ export default function VisitPage() {
                         </p>
                         <form className="space-y-4" onSubmit={handleSubmit}>
                             <div>
-                                <label className="block mb-1 font-medium text-black">Full Name</label>
+                                <label className="block mb-1 font-medium text-black">Full Name *</label>
                                 <input
                                     name="fullName"
                                     type="text"
@@ -96,12 +122,13 @@ export default function VisitPage() {
                                     onChange={handleChange}
                                     placeholder="Your Name"
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#2d386a]"
+                                    required
                                 />
                                 {errors.fullName && <p className="text-sm text-red-600">{errors.fullName}</p>}
                             </div>
 
                             <div>
-                                <label className="block mb-1 font-medium text-black">Email Address</label>
+                                <label className="block mb-1 font-medium text-black">Email Address *</label>
                                 <input
                                     name="email"
                                     type="email"
@@ -109,11 +136,13 @@ export default function VisitPage() {
                                     onChange={handleChange}
                                     placeholder="your@example.com"
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#2d386a]"
+                                    required
                                 />
                                 {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
                             </div>
+
                             <div>
-                                <label className="block mb-1 font-medium text-black">Phone Number</label>
+                                <label className="block mb-1 font-medium text-black">Phone Number *</label>
                                 <input
                                     name="number"
                                     type="tel"
@@ -121,9 +150,10 @@ export default function VisitPage() {
                                     onChange={handleChange}
                                     placeholder="+91 12345 67890"
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#2d386a]"
+                                    required
                                 />
                                 {errors.number && <p className="text-sm text-red-600">{errors.number}</p>}  
-                                </div>
+                            </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -161,27 +191,39 @@ export default function VisitPage() {
                                 />
                             </div>
 
+                            {/* reCAPTCHA v3 - invisible */}
+                            <ReCaptchaV3 onVerify={handleRecaptchaVerify} />
+
+                            <p className="text-xs text-gray-500">
+                                This site is protected by reCAPTCHA and the Google{' '}
+                                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                    Privacy Policy
+                                </a>{' '}
+                                and{' '}
+                                <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                    Terms of Service
+                                </a>{' '}
+                                apply.
+                            </p>
+
                             {errors.form && <p className="text-sm text-red-600">{errors.form}</p>}
                             {successMsg && <p className="text-sm text-green-600">{successMsg}</p>}
 
                             <button
                                 type="submit"
-                                disabled={loading}
-                                className="w-full bg-[#2d386a] hover:bg-[#1f2a4e] text-white py-2 rounded-lg font-semibold transition duration-200"
+                                disabled={loading || !recaptchaToken}
+                                className={`w-full bg-[#2d386a] hover:bg-[#1f2a4e] text-white py-2 rounded-lg font-semibold transition duration-200 ${
+                                    loading ? 'opacity-70 cursor-not-allowed' : ''
+                                }`}
                             >
                                 {loading ? 'Submitting...' : 'Submit Booking Request'}
                             </button>
                         </form>
                     </div>
 
-                    {/* Location & Contact - Unchanged */}
-                    {/* ...Your existing contact section remains untouched */}
-
-
                     {/* Location & Contact */}
                     <div className="bg-white border border-gray-200 rounded-xl p-6">
                         <h2 className="text-2xl font-bold mb-3 text-black">Our Location & Contact</h2>
-
                         <p className="mb-5 text-gray-600">
                             We are conveniently located in the heart of Mumbai. Feel free to reach out to us through any of the channels below.
                         </p>
