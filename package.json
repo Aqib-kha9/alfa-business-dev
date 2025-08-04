@@ -5,8 +5,6 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "cross-env NEXT_IGNORE_TYPE_ERRORS=true next build",
-    "clean": "if exist .next rmdir /s /q .next && if exist node_modules\\.cache rmdir /s /q node_modules\\.cache",
-    "postinstall": "npm run clean",
     "start": "next start",
     "lint": "next lint",
     "postbuild": "next-sitemap"
