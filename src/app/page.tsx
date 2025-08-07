@@ -18,7 +18,7 @@ export default function HomePage() {
       <HeroSection />
       <WhyChooseSection
         heading="Why Choose Alfa Business Center?"
-        subheading="Discover the top reasons professionals prefer working with us."
+        subheading="Alfa Business Center has consistently moved toward private office space and virtual office space markets from a one of a kind, innovative viewpoint."
         // features={homeFeatures}
         maxVisible={6}
       />
