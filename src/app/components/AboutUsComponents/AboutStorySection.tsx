@@ -6,19 +6,16 @@ export default function AboutStorySection() {
       <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row items-center gap-12">
         {/* Left: Text Content */}
         <div className="flex-1">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+          <h1 className="text-4xl sm:text-5x; font-bold text-gray-600 mb-6">About Us</h1>
+          <h2 className="text-3xl sm:text-4xl font-bolder text-gray-900 mb-6">
             Our Story: Pioneering Coworking Excellence
           </h2>
           <div className="text-gray-600 leading-relaxed text-base space-y-4">
             <p>
-              From a bold vision to redefine and elevate the traditional workspace, Alfa Business Center was proudly founded in 2020.
-              What began as a simple idea has since evolved into a mission-driven journey to create more than just office spaces —
-              we set out to build a vibrant hub of innovation, connection, and opportunity.
+              Alfa Busines Center has consistently moved toward private office space and virtual office space markets from a one of a kind, innovative viewpoint. Our assurance to offer sole owners and private companies genuine business arrangements has turned the possibility of costly official workplaces and indifferent virtual office and cooperating spaces on its head.
             </p>
             <p>
-              Our story is rooted in the belief that people do their best work when they’re surrounded by a dynamic, collaborative,
-              and supportive environment. We understand that success isn’t achieved in isolation; it’s nurtured through meaningful relationships,
-              access to the right resources.
+              We comprehend what cooperating implies. That is the 21st century office culture. Make proper acquaintance with the contemporary idea of office culture, make proper acquaintance with WEWORK!
             </p>
           </div>
         </div>
