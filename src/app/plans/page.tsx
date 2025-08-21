@@ -15,7 +15,6 @@ export default function AllPlansPage() {
       try {
         const res = await fetch('/api/plans');
         const data = await res.json();
-console.log("palccssss",data)
         setPlans(data);
         setSkeletonCount(data.length || 4); // set based on actual plans or fallback to 3
       } catch (error) {

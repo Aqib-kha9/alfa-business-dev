@@ -6,7 +6,6 @@ export default function AboutStorySection() {
       <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row items-center gap-12">
         {/* Left: Text Content */}
         <div className="flex-1">
-          <h1 className="text-4xl sm:text-5x; font-bold text-gray-600 mb-6">About Us</h1>
           <h2 className="text-3xl sm:text-4xl font-bolder text-gray-900 mb-6">
             Our Story: Pioneering Coworking Excellence
           </h2>

@@ -18,7 +18,7 @@ export const metadata = {
     siteName: 'Alfa Business Center',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Alfa Business Center',
@@ -31,7 +31,7 @@ export const metadata = {
     title: 'Alfa Business Center',
     description: 'Explore modern and flexible coworking spaces in Mumbai.',
     creator: '@alfabusiness',
-    images: ['/og-image.jpg'],
+    images: ['/og-image.png'],
   },
   robots: {
     index: true,

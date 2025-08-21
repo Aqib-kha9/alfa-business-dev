@@ -13,7 +13,7 @@ export default function AboutPage() {
       <WhyChooseSection
         heading="What Sets Us Apart?"
         subheading="We’re more than a workspace — we’re your productivity partner."
-        maxVisible={6}
+        maxVisible={8}
       />
       <OurJourneySection />
       <TrustedBySection />

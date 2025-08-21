@@ -10,16 +10,29 @@ type FAQItem = {
 
 const faqs: FAQItem[] = [
   {
-    question: 'Can I cancel my booking anytime?',
-    answer: 'Yes, cancellations are allowed up to 48 hours before the reserved date.',
+    question: 'What are your hours?',
+    answer:
+      'Alfa Business Center is working from 9.00am to 8.00pm. We are open to provide access 24/7 subject to minimum of 10 Co-workers',
   },
   {
-    question: 'Are utilities (like internet, electricity) included?',
-    answer: 'Yes, all utilities are included in the monthly/yearly plans.',
+    question: 'Do you work on Sunday?',
+    answer: 'Yes, Alfa Business Center works on Sunday from 9am to 8pm',
   },
   {
-    question: 'Can I upgrade from Monthly to Yearly anytime?',
-    answer: 'Yes, simply contact our support team and we\'ll help you upgrade.',
+    question: 'Do you allow pets?',
+    answer: 'No, the pets ain’t allowed at Alfa Business Center.',
+  },
+  {
+    question: 'Is internet included?',
+    answer: 'Yes, the internet is included at Alfa Business Center via Wifi.',
+  },
+  {
+    question: 'What about your other locations?',
+    answer: 'Mentioned location is the only one but we are planning for other location also.',
+  },
+  {
+    question: 'How do I get started?',
+    answer: 'You can start at Alfa Business Center either by book a tour or by getting registered with us.',
   },
 ];
 
@@ -31,30 +44,43 @@ export default function FaqSection() {
   };
 
   return (
-    <div className="mt-30">
-      <h2 className="text-2xl font-bold text-[#1e2952] mb-6">Frequently Asked Questions</h2>
-      <div className="space-y-4 text-left">
+    <div className="mt-20">
+      <h2 className="text-3xl font-bold text-[#1e2952] mb-10 text-center">
+        Frequently Asked Questions
+      </h2>
+
+      {/* ✅ Flex wrap so each item has independent height */}
+      <div className="flex flex-wrap gap-6 items-start text-left">
         {faqs.map((faq, idx) => (
           <div
             key={idx}
-            className="border border-gray-200 rounded-xl bg-white shadow-sm transition-all duration-300 overflow-hidden"
+            className={`w-full md:w-[48%] rounded-2xl border transition-all duration-300 
+              ${openIndex === idx ? 'border-[#1e2952]' : 'border-gray-200'}
+            `}
           >
             <button
               onClick={() => toggle(idx)}
-              className="flex items-center justify-between w-full px-5 py-4 text-left hover:bg-gray-50 focus:outline-none"
+              className="flex items-center justify-between w-full px-6 py-3 text-left 
+                         hover:bg-gray-50 rounded-2xl transition-colors"
             >
-              <span className="font-medium text-[#1e2952]">{faq.question}</span>
+              <span className="font-semibold text-[#1e2952] text-lg">{faq.question}</span>
               {openIndex === idx ? (
                 <ChevronUp className="w-5 h-5 text-[#1e2952]" />
               ) : (
                 <ChevronDown className="w-5 h-5 text-[#1e2952]" />
               )}
             </button>
-            {openIndex === idx && (
-              <div className="px-5 pb-5 text-sm text-gray-700 animate-fadeIn">
+
+            {/* ✅ Smooth expand/collapse */}
+            <div
+              className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                openIndex === idx ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+              }`}
+            >
+              <div className="px-6 pb-5 text-sm text-gray-700 leading-relaxed">
                 {faq.answer}
               </div>
-            )}
+            </div>
           </div>
         ))}
       </div>

@@ -68,7 +68,7 @@ export default function WhyChooseSection({
           </p>
         )}
 
-        <div className="grid grid-cols-1 text-center sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 text-center sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {loading
             ? Array.from({ length: maxVisible || 6 }).map((_, index) => (
                 <div

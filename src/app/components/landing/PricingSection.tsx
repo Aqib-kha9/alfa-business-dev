@@ -10,7 +10,7 @@ type Plan = {
   title: string;
   popular: boolean;
   monthlyPrice: number;
-  features: string[];
+  monthlyFeatures: string[];
 };
 
 export default function PopularPlans() {
@@ -23,6 +23,7 @@ export default function PopularPlans() {
         const res = await fetch('/api/plans');
         if (!res.ok) throw new Error('Failed to fetch plans');
         const data = await res.json();
+        console.log(data);
         setPlans(data);
       } catch (error) {
         console.error("Error fetching plans:", error);
@@ -62,9 +63,14 @@ export default function PopularPlans() {
   return (
     <section className="bg-white py-16">
       <div className="max-w-7xl mx-auto px-4 text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-12">
+         <h2 className="text-3xl sm:text-4xl font-bold text-[#2d386a] mb-4">
           Our Popular Plans
         </h2>
+        
+          <p className="text-gray-600 mb-10 max-w-2xl mx-auto text-base sm:text-lg">
+            Alfa working spaces create the best of both worlds for freelancers: The flexibility of choosing your own hours and schedule without the isolation.
+          </p>
+        
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -82,7 +88,7 @@ export default function PopularPlans() {
                 title={plan.title}
                 price={`₹${plan.monthlyPrice}`}
                 duration="/ Month"
-                features={plan.features}
+                features={plan.monthlyFeatures}
               />
             ))}
           </div>

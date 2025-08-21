@@ -19,8 +19,7 @@ export default function HomePage() {
       <WhyChooseSection
         heading="Why Choose Alfa Business Center?"
         subheading="Alfa Business Center has consistently moved toward private office space and virtual office space markets from a one of a kind, innovative viewpoint."
-        // features={homeFeatures}
-        maxVisible={6}
+        maxVisible={8}
       />
       <PricingSection />
       <TestimonialsSection />
