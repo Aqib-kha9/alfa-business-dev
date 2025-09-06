@@ -4,29 +4,36 @@ import { SiWhatsapp } from "react-icons/si";
 import Image from "next/image";
 import { useState } from "react";
 import ReCaptchaV3 from "@/app/components/reusable/ReCaptchaV3";
+import { bookTourSchema } from "@/app/lib/schemas/bookTourSchema";
 
 export default function ScheduleVisit() {
   const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    email: '',
-    date: '',
-    time: '',
-    referral: '',
-    message: '',
-    agree: false
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    date: "",
+    time: "",
+    referral: "",
+    message: "",
+    agree: false,
   });
-  const [recaptchaToken, setRecaptchaToken] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const [recaptchaToken, setRecaptchaToken] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [successMsg, setSuccessMsg] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value, type } = e.target as HTMLInputElement;
-    const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
-    
-    setForm(prev => ({
+    const checked =
+      type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
+
+    setForm((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -36,58 +43,91 @@ export default function ScheduleVisit() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+    setSuccessMsg("");
     setIsSubmitting(true);
 
-    // Basic validation
-    if (!form.firstName || !form.phone || !form.email || !form.agree) {
-      alert('Please fill in all required fields and agree to the terms');
+    if (!form.agree) {
+      setErrors({ agree: "You must agree before submitting." });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Map ScheduleVisit form → bookTour API payload
+    const payload = {
+      fullName: `${form.firstName} ${form.lastName}`.trim(),
+      email: form.email,
+      number: form.phone,
+      preferredDate: form.date,
+      preferredTime: form.time,
+      message:
+        form.referral && form.message
+          ? `${form.message}\n\n(Referral: ${form.referral})`
+          : form.referral
+          ? `(Referral: ${form.referral})`
+          : form.message,
+    };
+
+    // Validate using bookTourSchema
+    const validation = bookTourSchema.safeParse(payload);
+    if (!validation.success) {
+      const fieldErrors = validation.error.flatten().fieldErrors;
+      setErrors(
+        Object.entries(fieldErrors).reduce((acc, [key, value]) => {
+          acc[key] = value?.[0] || "";
+          return acc;
+        }, {} as Record<string, string>)
+      );
       setIsSubmitting(false);
       return;
     }
 
     try {
-      // Verify reCAPTCHA first
-      const captchaResponse = await fetch('/api/verify-captcha', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      // Verify reCAPTCHA
+      const captchaResponse = await fetch("/api/verify-captcha", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: recaptchaToken }),
       });
 
       const captchaData = await captchaResponse.json();
-
       if (!captchaData.success) {
-        throw new Error('CAPTCHA verification failed. Please try again.');
+        throw new Error("CAPTCHA verification failed. Please try again.");
       }
 
-      // Submit form data
-      const res = await fetch('/api/schedule-visit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+      // Call Book Tour API
+      const res = await fetch("/api/book-tour", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
-
-      if (res.ok) {
-        alert('Visit scheduled successfully! Our team will contact you shortly.');
-        setForm({
-          firstName: '',
-          lastName: '',
-          phone: '',
-          email: '',
-          date: '',
-          time: '',
-          referral: '',
-          message: '',
-          agree: false
-        });
-        setRecaptchaToken('');
-      } else {
-        throw new Error(data.error || 'Something went wrong.');
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong. Please try again.");
       }
-    } catch (err) {
-      console.error(err);
-      alert(err instanceof Error ? err.message : 'Error submitting the form.');
+
+      setSuccessMsg("Visit scheduled successfully! We’ll contact you soon.");
+      setForm({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        date: "",
+        time: "",
+        referral: "",
+        message: "",
+        agree: false,
+      });
+      setRecaptchaToken("");
+    } catch (error) {
+      console.error(error);
+      setErrors({
+        form:
+          error instanceof Error
+            ? error.message
+            : "Failed to submit. Please try again later.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -107,25 +147,42 @@ export default function ScheduleVisit() {
           </p>
 
           <div className="space-y-1 text-sm">
-            <a
-              href="https://wa.me/919820190836"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-gray-700 hover:text-[#2d386a] transition"
-            >
-              <SiWhatsapp className="text-[#2d386a]" size={18} />
-              <span>+91 98201 90836</span>
-            </a>
+  {/* WhatsApp Chat */}
+  <a
+    href="https://wa.me/919820190836"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center gap-2 text-gray-700 hover:text-[#2d386a] transition"
+  >
+    <SiWhatsapp className="text-[#2d386a]" size={18} />
+    <span>+91 98201 90836</span>
+  </a>
 
-            <div className="flex items-center gap-2 text-gray-700">
-              <Mail className="text-[#2d386a]" size={18} />
-              <span>info@alfabusiness.com</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-700">
-              <MapPin className="text-[#2d386a]" size={18} />
-              <span>Bandra Kurla Complex, Mumbai</span>
-            </div>
-          </div>
+  {/* Email → Click to open mail client */}
+  <a
+    href="mailto:info@alfaesol.com"
+    className="flex items-center gap-2 text-gray-700 hover:text-[#2d386a] transition"
+  >
+    <Mail className="text-[#2d386a]" size={18} />
+    <span>info@alfaesol.com</span>
+  </a>
+
+  {/* Address → Open Google Maps */}
+  <a
+    href="https://maps.google.com/?q=Dattani Tower, Mid Wing, Kore Kendra,
+Borivali (West), next to McDonald,
+Mumbai, Maharashtra 400092"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center gap-2 text-gray-700 hover:text-[#2d386a] transition"
+  >
+    <MapPin className="text-[#2d386a]" size={18} />
+    <span>Dattani Tower, Mid Wing, Kore Kendra,
+Borivali (West), next to McDonald,
+Mumbai, Maharashtra 400092</span>
+  </a>
+</div>
+
 
           <div className="rounded-xl overflow-hidden mt-3">
             <Image
@@ -161,6 +218,9 @@ export default function ScheduleVisit() {
                 className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm focus:outline-[#2d386a]"
               />
             </div>
+            {errors.fullName && (
+              <p className="text-xs text-red-600">{errors.fullName}</p>
+            )}
 
             <input
               type="tel"
@@ -171,6 +231,10 @@ export default function ScheduleVisit() {
               required
               className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm focus:outline-[#2d386a]"
             />
+            {errors.number && (
+              <p className="text-xs text-red-600">{errors.number}</p>
+            )}
+
             <input
               type="email"
               name="email"
@@ -180,10 +244,16 @@ export default function ScheduleVisit() {
               required
               className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm focus:outline-[#2d386a]"
             />
+            {errors.email && (
+              <p className="text-xs text-red-600">{errors.email}</p>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="relative">
-                <CalendarIcon className="absolute left-3 top-2.5 text-gray-400" size={16} />
+                <CalendarIcon
+                  className="absolute left-3 top-2.5 text-gray-400"
+                  size={16}
+                />
                 <input
                   type="date"
                   name="date"
@@ -200,6 +270,12 @@ export default function ScheduleVisit() {
                 className="w-full py-2 px-3 border border-gray-300 rounded-md text-sm focus:outline-[#2d386a]"
               />
             </div>
+            {errors.preferredDate && (
+              <p className="text-xs text-red-600">{errors.preferredDate}</p>
+            )}
+            {errors.preferredTime && (
+              <p className="text-xs text-red-600">{errors.preferredTime}</p>
+            )}
 
             <input
               type="text"
@@ -220,40 +296,62 @@ export default function ScheduleVisit() {
             ></textarea>
 
             <div className="flex items-start gap-2">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 name="agree"
                 checked={form.agree}
                 onChange={handleChange}
                 required
-                className="mt-1"
+                className="mt-1 cursor-pointer"
               />
               <p className="text-xs text-gray-600 leading-tight">
                 I agree that my submitted data is being collected and stored. *
               </p>
             </div>
+            {errors.agree && (
+              <p className="text-xs text-red-600">{errors.agree}</p>
+            )}
 
             {/* reCAPTCHA v3 - invisible */}
             <ReCaptchaV3 onVerify={handleRecaptchaVerify} />
-            
+
+            {errors.form && (
+              <p className="text-xs text-red-600">{errors.form}</p>
+            )}
+            {successMsg && (
+              <p className="text-xs text-green-600">{successMsg}</p>
+            )}
+
             <button
               type="submit"
-              disabled={isSubmitting}
-              className={`w-full bg-[#2d386a] hover:bg-[#1e2952] text-white font-medium py-2.5 rounded-md transition text-sm ${
-                isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+              disabled={isSubmitting || !recaptchaToken}
+              className={`w-full bg-[#2d386a] hover:bg-[#1e2952] cursor-pointer text-white font-medium py-2.5 rounded-md transition text-sm ${
+                isSubmitting ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
-              {isSubmitting ? 'Scheduling...' : 'Schedule Visit'}
+              {isSubmitting ? "Scheduling..." : "Schedule Visit"}
             </button>
 
             <p className="text-xs text-gray-500">
-              This site is protected by reCAPTCHA and the Google 
-              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline ml-1">
+              This site is protected by reCAPTCHA and the Google
+              <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline ml-1"
+              >
                 Privacy Policy
-              </a> and 
-              <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline ml-1">
+              </a>{" "}
+              and
+              <a
+                href="https://policies.google.com/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline ml-1"
+              >
                 Terms of Service
-              </a> apply.
+              </a>{" "}
+              apply.
             </p>
           </form>
         </div>

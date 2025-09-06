@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -12,7 +13,7 @@ const navItems = [
   { label: "Amenities", href: "/amenities" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
-  
+
 ];
 
 const Navbar = () => {
@@ -42,7 +43,14 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Left: Logo */}
         <div className="flex items-center gap-3">
-          <span className="text-xl font-semibold text-gray-900">Alfa</span>
+          <Image
+            src="/Logo.jpg"
+            alt="Alfa Logo"
+            width={90}
+            height={50}
+            className="object-contain"
+            priority
+          />
         </div>
 
         {/* Center: Nav Links */}

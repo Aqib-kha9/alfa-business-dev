@@ -3,7 +3,7 @@ import { MapPin, Phone, Mail, MessageCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import { bookTourSchema } from '@/app/lib/schemas/bookTourSchema';
 import ReCaptchaV3 from '@/app/components/reusable/ReCaptchaV3';
-
+import { SiWhatsapp } from 'react-icons/si';
 export default function VisitPage() {
     const [form, setForm] = useState({
         fullName: '',
@@ -212,7 +212,7 @@ export default function VisitPage() {
                             <button
                                 type="submit"
                                 disabled={loading || !recaptchaToken}
-                                className={`w-full bg-[#2d386a] hover:bg-[#1f2a4e] text-white py-2 rounded-lg font-semibold transition duration-200 ${
+                                className={`w-full bg-[#2d386a] hover:bg-[#1f2a4e] text-white cursor-pointer py-2 rounded-lg font-semibold transition duration-200 ${
                                     loading ? 'opacity-70 cursor-not-allowed' : ''
                                 }`}
                             >
@@ -222,49 +222,72 @@ export default function VisitPage() {
                     </div>
 
                     {/* Location & Contact */}
-                    <div className="bg-white border border-gray-200 rounded-xl p-6">
-                        <h2 className="text-2xl font-bold mb-3 text-black">Our Location & Contact</h2>
-                        <p className="mb-5 text-gray-600">
-                            We are conveniently located in the heart of Mumbai. Feel free to reach out to us through any of the channels below.
-                        </p>
+<div className="bg-white border border-gray-200 rounded-xl p-6">
+  <h2 className="text-2xl font-bold mb-3 text-black">Our Location & Contact</h2>
+  <p className="mb-5 text-gray-600">
+    We are conveniently located in the heart of Mumbai. Feel free to reach out to us through any of the channels below.
+  </p>
 
-                        <div className="mb-5">
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.651298505902!2d72.8693834751927!3d19.079030952256443!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c630519841ff%3A0x9f3f70cc73e7c4f!2sBandra%20Kurla%20Complex%2C%20Mumbai%2C%20Maharashtra%20400051!5e0!3m2!1sen!2sin!4v1721487992000!5m2!1sen!2sin"
-                                width="100%"
-                                height="300"
-                                allowFullScreen
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                className="w-full rounded-lg"
-                            ></iframe>
-                            <p className="text-sm text-center mt-2 text-gray-500">Interactive Map View</p>
-                        </div>
+  {/* Map */}
+  <div className="mb-5">
+    <iframe
+      src="https://maps.google.com/maps?q=Dattani%20Tower%2C%20Mid%20Wing%2C%20Kore%20Kendra%2C%20Borivali%20(West)%2C%20next%20to%20McDonald%2C%20Mumbai%2C%20Maharashtra%20400092&t=&z=15&ie=UTF8&iwloc=&output=embed"
+      width="100%"
+      height="350"
+      allowFullScreen
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+      className="w-full rounded-lg"
+    ></iframe>
+    <p className="text-sm text-center mt-2 text-gray-500">Interactive Map View</p>
+  </div>
 
-                        <div className="space-y-4 text-sm text-gray-700">
-                            <p className="flex items-start gap-2">
-                                <MapPin className="text-[#2d386a] w-5 h-5 mt-0.5" />
-                                <span>Unit 101, Business Hub Tower, Bandra Kurla Complex, Mumbai, Maharashtra 400051, India</span>
-                            </p>
-                            <p className="flex items-center gap-2">
-                                <Phone className="text-[#2d386a] w-5 h-5" />
-                                <span>+91 22 1234 5678</span>
-                            </p>
-                            <p className="flex items-center gap-2">
-                                <Mail className="text-[#2d386a] w-5 h-5" />
-                                <span>info@alfabusinesscenter.com</span>
-                            </p>
-                            <a
-                                href="https://wa.me/911234567890"
-                                className="text-[#2d386a] hover:underline flex items-center gap-2"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <MessageCircle className="w-5 h-5" />
-                                Chat on WhatsApp
-                            </a>
-                        </div>
-                    </div>
+  {/* Contact Info */}
+  <div className="space-y-4 text-sm text-gray-700">
+    {/* Address → Opens Google Maps */}
+    <a
+      href="https://maps.google.com/?q=Dattani Tower, Mid Wing, Kore Kendra, Borivali (West), next to McDonald, Mumbai, Maharashtra 400092"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-start gap-2 hover:text-[#2d386a] transition"
+    >
+      <MapPin className="text-[#2d386a] w-5 h-5 mt-0.5" />
+      <span>
+        Dattani Tower, Mid Wing, Kore Kendra, Borivali (West), next to McDonald, Mumbai, Maharashtra 400092
+      </span>
+    </a>
+
+    {/* Phone → Click to call */}
+    <a
+      href="tel:+919820190836"
+      className="flex items-center gap-2 hover:text-[#2d386a] transition"
+    >
+      <Phone className="text-[#2d386a] w-5 h-5" />
+      <span>+91 98201 90836</span>
+    </a>
+
+    {/* Email → Opens mail client */}
+    <a
+      href="mailto:info@alfaesol.com"
+      className="flex items-center gap-2 hover:text-[#2d386a] transition"
+    >
+      <Mail className="text-[#2d386a] w-5 h-5" />
+      <span>info@alfaesol.com</span>
+    </a>
+
+    {/* WhatsApp → Opens chat */}
+    <a
+      href="https://wa.me/919820190836"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 hover:text-[#2d386a] transition"
+    >
+      <SiWhatsapp className="text-[#2d386a]" size={20} />
+      <span>Chat on WhatsApp</span>
+    </a>
+  </div>
+</div>
+
                 </div>
             </div>
         </div>

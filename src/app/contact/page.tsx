@@ -131,26 +131,25 @@ export default function ContactUsPage() {
                       className="w-full border border-gray-300 h-24 rounded-md px-4 py-2 mt-1 focus:ring-2 focus:ring-[#2d386a] focus:outline-none"
                     />
                   </div>
-                  
+
                   {/* reCAPTCHA v3 - invisible */}
                   <ReCaptchaV3 onVerify={handleRecaptchaVerify} />
-                  
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`inline-flex items-center gap-2 bg-[#2d386a] text-white px-6 py-2 rounded-md hover:bg-[#1f2a4e] transition ${
-                      isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
-                    }`}
+                    className={`inline-flex items-center gap-2 cursor-pointer bg-[#2d386a] text-white px-6 py-2 rounded-md hover:bg-[#1f2a4e] transition ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                      }`}
                   >
                     {isSubmitting ? 'Sending...' : 'Send Message'}
                     {!isSubmitting && <span className="text-xl">→</span>}
                   </button>
-                  
+
                   <p className="text-xs text-gray-500">
-                    This site is protected by reCAPTCHA and the Google 
+                    This site is protected by reCAPTCHA and the Google
                     <a href="https://policies.google.com/privacy" className="text-blue-500 hover:underline ml-1">
                       Privacy Policy
-                    </a> and 
+                    </a> and
                     <a href="https://policies.google.com/terms" className="text-blue-500 hover:underline ml-1">
                       Terms of Service
                     </a> apply.
@@ -158,40 +157,63 @@ export default function ContactUsPage() {
                 </form>
               </div>
 
-              {/* Right: Map & Info */}
-              <div className="space-y-6">
-                <div className="rounded-lg overflow-hidden h-64 border border-gray-300">
-                  <iframe
-                    src="https://maps.google.com/maps?q=Alfa%20Business%20Center,%20Mumbai&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                    width="100%"
-                    height="100%"
-                    frameBorder="0"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                  ></iframe>
-                </div>
+             {/* Right: Map & Info */}
+<div className="space-y-6">
+  <div className="rounded-lg overflow-hidden h-64 border border-gray-300">
+    <iframe
+      src="https://maps.google.com/maps?q=Alfa%20Business%20Center,%20Mumbai&t=&z=15&ie=UTF8&iwloc=&output=embed"
+      width="100%"
+      height="100%"
+      frameBorder="0"
+      style={{ border: 0 }}
+      allowFullScreen
+    ></iframe>
+  </div>
 
-                <div>
-                  <h3 className="text-lg sm:text-xl font-semibold text-black mb-3">Our Location & Contact Info</h3>
-                  <ul className="space-y-4 text-sm text-black">
-                    <li className="flex items-start gap-3">
-                      <MapPin className="text-[#2d386a] w-5 h-5 mt-0.5" />
-                      <span>
-                        Alfa Business Center, Unit 701, Pinnacle Towers, Bandra Kurla Complex,
-                        Mumbai, Maharashtra 400051, India
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <Phone className="text-[#2d386a] w-5 h-5" />
-                      +91 22 6789 0123
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <Mail className="text-[#2d386a] w-5 h-5" />
-                      contact@alfabusiness.com
-                    </li>
-                  </ul>
-                </div>
-              </div>
+  <div>
+    <h3 className="text-lg sm:text-xl font-semibold text-black mb-3">
+      Our Location & Contact Info
+    </h3>
+    <ul className="space-y-4 text-sm text-black">
+      {/* Address → Google Maps Link */}
+      <li className="flex items-start gap-3">
+        <MapPin className="text-[#2d386a] w-5 h-5 mt-0.5" />
+        <a
+          href="https://maps.google.com/?q=Dattani Tower, Mid Wing, Kore Kendra, Borivali (West), next to McDonald, Mumbai, Maharashtra 400092"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline"
+        >
+          Dattani Tower, Mid Wing, Kore Kendra, Borivali (West), next to
+          McDonald, Mumbai, Maharashtra 400092
+        </a>
+      </li>
+
+      {/* Phone → Click to Call */}
+      <li className="flex items-center gap-3">
+        <Phone className="text-[#2d386a] w-5 h-5" />
+        <a
+          href="tel:+919820190836"
+          className="hover:underline"
+        >
+          +91 98201 90836
+        </a>
+      </li>
+
+      {/* Email → Click to Mail */}
+      <li className="flex items-center gap-3">
+        <Mail className="text-[#2d386a] w-5 h-5" />
+        <a
+          href="mailto:info@alfaesol.com"
+          className="hover:underline"
+        >
+          info@alfaesol.com
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
             </div>
           </div>
         </div>

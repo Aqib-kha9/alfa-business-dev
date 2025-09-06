@@ -5,6 +5,7 @@ import {
   FaFacebookF,
   FaLinkedinIn,
   FaYoutube,
+  FaInstagram,
 } from "react-icons/fa";
 import { useState } from "react";
 
@@ -17,7 +18,7 @@ export default function Footer() {
     e.preventDefault();
 
     if (!agree) {
-      setMessage("Please accept the terms & conditions.");
+      setMessage("Please accept the terms & conditions before subscribing.");
       return;
     }
 
@@ -68,6 +69,23 @@ export default function Footer() {
               98201 90836
             </a>
           </p>
+
+
+
+          {/* Social Media */}
+          <div className="flex gap-4 mt-4 text-gray-600 text-lg">
+            <a href="https://twitter.com/alphabusinessc6" target="_blank" rel="noopener noreferrer">
+              <FaTwitter className="hover:text-[#2d386a]" />
+            </a>
+            <a href="https://www.facebook.com/Alfa-Business-Center-100864201496641/" target="_blank" rel="noopener noreferrer">
+              <FaFacebookF className="hover:text-[#2d386a]" />
+            </a>
+            <a href="https://www.instagram.com/alfa_business_centre/" target="_blank" rel="noopener noreferrer">
+              <FaInstagram className="hover:text-[#2d386a]" />
+            </a>
+          </div>
+
+
         </div>
 
         {/* Links Section */}
@@ -103,8 +121,8 @@ export default function Footer() {
         <div className="md:col-span-4 space-y-4">
           <h4 className="font-bold text-gray-900 mb-2">Stay Updated</h4>
           <form className="flex flex-col gap-3 w-full" onSubmit={handleSubmit}>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:items-stretch w-full">
-              <div className="flex items-center w-full sm:flex-1 bg-white border border-gray-300 rounded sm:rounded-r-none shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-[#2d386a]">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 w-full">
+              <div className="flex items-center w-full bg-white border border-gray-300 rounded sm:rounded-r-none overflow-hidden focus-within:border-[#2d386a] focus-within:border-2 transition-all">
                 <div className="flex items-center px-4 text-gray-500">
                   <Mail size={18} />
                 </div>
@@ -120,7 +138,7 @@ export default function Footer() {
 
               <button
                 type="submit"
-                className="w-full sm:w-auto px-6 py-2.5 text-sm font-semibold text-white bg-[#2d386a] hover:bg-[#1f2a4f] transition-all rounded sm:rounded-l-none"
+                className="w-full cursor-pointer sm:w-auto px-6 py-2.5 text-sm font-semibold text-white bg-[#2d386a] hover:bg-[#1f2a4f] transition-all rounded sm:rounded-l-none whitespace-nowrap"
               >
                 Subscribe
               </button>
@@ -129,20 +147,29 @@ export default function Footer() {
             <label className="text-xs text-gray-600 flex items-start gap-2">
               <input
                 type="checkbox"
-                className="mt-1"
+                className="mt-1 cursor-pointer"
                 required
                 checked={agree}
-                onChange={() => setAgree(!agree)}
+                onChange={() => {
+                  setAgree(!agree);
+                  if (message && message.includes("Please accept")) {
+                    setMessage("");
+                  }
+                }}
               />
-              I have read and agree to the{" "}
-              <Link href="/terms-of-use" className="underline text-[#2d386a]">
-                terms & conditions
-              </Link>.
+              <span>
+                I have read and agree to the{" "}
+                <Link href="/terms-of-use" className="underline text-[#2d386a]">
+                  terms & conditions
+                </Link>.
+              </span>
             </label>
 
             {/* Show message */}
             {message && (
-              <p className="text-xs text-green-600 mt-1">{message}</p>
+              <p className={`text-xs mt-1 ${message.includes("Please accept") ? "text-red-600" : "text-green-600"}`}>
+                {message}
+              </p>
             )}
           </form>
 
@@ -156,12 +183,30 @@ export default function Footer() {
           © 2025 Alfa Business Center. All rights reserved.
         </div>
         <div className="flex gap-4 text-gray-600 text-lg">
-          <Link href="#"><FaTwitter className="hover:text-[#2d386a]" /></Link>
-          <Link href="#"><FaFacebookF className="hover:text-[#2d386a]" /></Link>
-          <Link href="#"><FaLinkedinIn className="hover:text-[#2d386a]" /></Link>
-          <Link href="#"><FaYoutube className="hover:text-[#2d386a]" /></Link>
+          <a
+            href="https://twitter.com/alphabusinessc6"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaTwitter className="hover:text-[#2d386a]" />
+          </a>
+          <a
+            href="https://www.facebook.com/Alfa-Business-Center-100864201496641/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaFacebookF className="hover:text-[#2d386a]" />
+          </a>
+          <a
+            href="https://www.instagram.com/alfa_business_centre/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaInstagram className="hover:text-[#2d386a]" />
+          </a>
         </div>
       </div>
+
     </footer>
   );
 }
